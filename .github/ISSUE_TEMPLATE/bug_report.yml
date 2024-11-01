@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a bug in HarmoniaUI
+
+body:
+    - type: markdown
+      attributes:
+        value: |
+         When reporting issues, Please follow the instructions in this template. It helps us solve the issue quicker!
+         * Write a descriptive title.
+         * Open **one issue for one bug**, if you have multiple bugs then open new issue for each one of the bug.
+         * Search issues to ensure it hasn't been reported already. If you are unsure, don't worry **post a new issue** and if it's a duplicate we will handle it.
+         * Check if the issue persists in the latest version.
+    - type: textarea
+      attributes:
+        label: Tested Versions
+        description: Specify the HarmoniaUI versions you have tested. It helps contributors check when the error was introduced.
+      validations:
+        required: true
+    - type: input
+      attributes:
+        label: System Information
+        description: |
+         * Specify the OS version and revelant hardware information,
+         * Write the Godot version you are using.
+         * For graphics-related issues, specify the GPU model, driver version, and the rendering backend (GLES2, GLES3, Vulkan).
+         * In Godot you can copy the information from `Help > Copy System Info` at the top of editor window.
+        placeholder: Windows 10 - Godot v4.0.3.stable - Vulkan (Forward+) - dedicated NVIDIA GeForce GTX 970 (nvidia, 510.85.02) - Intel Core i7-10700KF CPU @ 3.80GHz (16 Threads)
+      validations:
+        required: true
+    - type: textarea
+      attributes:
+        label: Issue description
+        description: | 
+         Describe your issue, What's wrong and how should it work?
+         Format code with <code>\`\`\`</code> tags on seperate lines before and after the text.
+         Please do not add code or errors as images, you can add screenshots of the godot editor or behaviour.
+      validations:
+        required: true
+    - type: textarea
+      attributes:
+        label: Steps to reproduce
+        description: |
+         Provide the detailed step by step process that reproduces the issue. Reproducible issues greatly help the contributors to solve them. 
+      validations:
+        required: true
+    - type: textarea
+      attributes:
+        label: Minimal reproduction project (MRP)
+        description: |
+         * A small Godot project which reproduces the issue, with no unnecessary files included. Be sure to not include the .godot folder in the archive (but keep project.godot).
+         * If you believe the issue doesn't require MRP setup, just write 'N/A'
+         * Drag and drop a ZIP archive to upload it
+      validations:
+        required: true
