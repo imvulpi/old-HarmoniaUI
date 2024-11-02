@@ -11,7 +11,7 @@ env = SConscript("./extern/godot-cpp/SConstruct")
 # - LINKFLAGS are for linking flags
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-env.Append(CPPPATH=["src/"])
+env.Append(CPPPATH=['include/'])
 sources = Glob("src/*.cpp")
 
 if env["target"] in ["editor", "template_debug"]:

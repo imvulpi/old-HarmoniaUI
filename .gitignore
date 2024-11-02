@@ -1,3 +1,7 @@
+# Generated
+/src/gen/
+.sconsign.dblite
+
 # Prerequisites
 *.d
 
