@@ -34,18 +34,18 @@ Keep the Branch Up-to-Date, Regularly sync your branch with the base branch (ex 
 
 ## Branches
 
-main (The current stable release)
-├─ develop (The current version development)
-│   ├─ release/ (Branches that stabilize for a new version before merging to main)
-│   ├─ feature/ (New features for the upcoming version)
-│   └─ bugfix/ (Bug fixes and adjustments for the upcoming version)
-├─ v1.0 (Maintains the 1.0 version)
-│   ├─ feature/(name) (new features or enhancements)
-│   └─ bugfix/ (Bug fixes for the 1.0 version)
-├─ v2.0 (Maintains the 2.0 version)
-│   ├─ feature/(name)
-│   └─ bugfix/
-└─ hotfix/ (Immediate patches for the stable release)
+### master (The current stable release)
+- development (The current version development)
+  - release/ (Branches that stabilize for a new version before merging to master)
+  - feature/ (New features for the upcoming version)
+  - bugfix/ (Bug fixes and adjustments for the upcoming version)
+- v1.0 (Maintains the 1.0 version)
+  - feature/(name) (new features or enhancements)
+  - bugfix/ (Bug fixes for the 1.0 version)
+- v2.0 (Maintains the 2.0 version)
+  - feature/(name)
+  - bugfix/
+- hotfix/ (Immediate patches for the stable release)
 
 Now we don't want to complicate stuff as this is just a library not an application.
 That means only few versions will be maintained and they might not have all the new features or enhancements, the updates within a maintained version will be easy to upgrade.
