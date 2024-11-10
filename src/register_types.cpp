@@ -2,6 +2,8 @@
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
+#include "containers/container_box.h"
+#include "commons/unit_converter.h"
 
 using namespace godot;
 
@@ -9,6 +11,9 @@ void initialize_harmonia(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	GDREGISTER_CLASS(LengthUnit);
+	GDREGISTER_CLASS(ContainerBox);
 }
 
 void deinitialize_harmonia(ModuleInitializationLevel p_level) {
