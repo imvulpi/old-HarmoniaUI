@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 
 env = SConscript("./extern/godot-cpp/SConstruct")
 
@@ -10,11 +11,20 @@ env = SConscript("./extern/godot-cpp/SConstruct")
 # - CPPDEFINES are for pre-processor defines
 # - LINKFLAGS are for linking flags
 
-# tweak this if you want to use different folders, or more folders, to store your source code in.
-env.Append(CPPPATH=['include/'])
-sources = Glob("src/*.cpp")
+# collects all .cpp files except "gen"
+cpp_files = []
+exclude = set(['src\\gen',])
+for root, dirs, files in os.walk('src'):
+    dirs[:] = [d for d in dirs if os.path.join(root, d) not in exclude]
+    for file in files:
+        if file.endswith('.cpp'):
+            cpp_files.append(os.path.join(root, file))
+
+env.Append(CPPPATH=['./include/', './src/'])
+sources = cpp_files
 
 if env["target"] in ["editor", "template_debug"]:
+    # Will create issues if you create more directories in doc_classes/
     doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml"))
     sources.append(doc_data)
 
