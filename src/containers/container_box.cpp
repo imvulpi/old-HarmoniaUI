@@ -4,15 +4,18 @@
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/classes/window.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/classes/input_event_mouse_button.hpp>
+#include "core/systems/alert/layout/alert_layout_change.h"
 
 void ContainerBox::_ready(){
     set_process(true);
 }
 
 void ContainerBox::_process(double time) {
+    if(debug_outputs) UtilityFunctions::print("[GLOBAL] Current Time: ", update_time, " Interval: ", update_interval);
     update_time += time;
     if(update_time >= update_interval){
-        bool is_editor = Engine::get_singleton()->is_editor_hint();
+        if(debug_outputs) UtilityFunctions::print("[GLOBAL] bind amounts: ", alert_manager->binds.size());
         if (Engine::get_singleton()->is_editor_hint()) {
             editor_update_presentation();
         }
@@ -23,16 +26,58 @@ void ContainerBox::_process(double time) {
     }
 }
 
+void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input)
+{
+    ERR_FAIL_COND(p_gui_input.is_null());
+
+    if(auto* mouse_event = Object::cast_to<InputEventMouseButton>(*p_gui_input)){
+        if(mouse_event->is_pressed()){
+            if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_UP){
+
+            }
+        }
+    }
+}
+
+AlertManager* ContainerBox::get_alert_manager(){
+    return alert_manager;
+}
+
+void ContainerBox::set_alert_manager(AlertManager* manager){
+    alert_manager = manager;
+}
+
 void ContainerBox::update_presentation(){
+    if(parent == nullptr){
+        parent = get_parent_container();
+    }
+
     // Updates self size
     Vector2 new_size = Vector2(get_width(), get_height());
+    if(debug_outputs) UtilityFunctions::print("[RUNTIME] New size: ", new_size);
     ContainerBox::set_size(new_size);
 }
 
 void ContainerBox::editor_update_presentation(){
+    if(parent == nullptr){
+        parent = get_parent_container();
+    }
+
     // Updates self size
     Vector2 new_size = Vector2(editor_get_width(), editor_get_height());
+    if(debug_outputs) UtilityFunctions::print("[EDITOR] New size: ", new_size);
     ContainerBox::set_size(new_size);
+}
+
+ContainerBox* ContainerBox::get_parent_container()
+{
+    Node* parent_node = get_parent();
+    if(auto* container_box = Object::cast_to<ContainerBox>(parent_node))
+    {
+        return container_box;
+    }
+
+    return nullptr;
 }
 
 void ContainerBox::set_debug_outputs(bool debug_outputs)
@@ -51,7 +96,8 @@ double ContainerBox::get_width(int unit_type){
     }
 
     if(unit_type == LengthUnit::NOT_SET) return 0;
-    
+    if(debug_outputs) UtilityFunctions::print("[RUNTIME] Width: ", width.length, " ", width.unit_type);
+
     Size2 window_size = get_tree()->get_root()->get_visible_rect().size;
     if(parent == nullptr){
         return ContainerUnitConverter::get_width(width, window_size.x, window_size, unit_type);
@@ -63,6 +109,7 @@ double ContainerBox::get_width(int unit_type){
 void ContainerBox::set_width(double length, int unit_type){
     ContainerBox::width.length = length;
     ContainerBox::width.unit_type = unit_type;
+    alert_manager->dispatch_alert(&AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::WIDTH));
 }
 
 double ContainerBox::editor_get_width(int unit_type)
@@ -70,7 +117,9 @@ double ContainerBox::editor_get_width(int unit_type)
     if(height_str != ""){
         height = LengthPair::get_pair(height_str);
     }
+
     if(unit_type == LengthUnit::NOT_SET) return 0;
+    if(debug_outputs) UtilityFunctions::print("[EDITOR] Width: ", width.length, " ", width.unit_type);
 
     Size2 window_size = Size2(
         ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_width"), 
@@ -80,12 +129,13 @@ double ContainerBox::editor_get_width(int unit_type)
         return ContainerUnitConverter::get_width(width, window_size.x, window_size, unit_type);
     }
 
-    return ContainerUnitConverter::get_width(width, parent->get_width(), window_size, unit_type);
+    return ContainerUnitConverter::get_width(width, parent->editor_get_width(), window_size, unit_type);
 }
 
 void ContainerBox::set_width_str(String length_and_unit){
     width_str = length_and_unit;
-    width = LengthPair::get_pair(length_and_unit);
+    LengthPair pair = LengthPair::get_pair(length_and_unit);
+    set_width(pair.length, pair.unit_type);
 }
 
 String ContainerBox::get_width_str()
@@ -96,11 +146,13 @@ String ContainerBox::get_width_str()
 void ContainerBox::set_height(double length, int unit_type){
     ContainerBox::height.length = length;
     ContainerBox::height.unit_type = unit_type;
+    alert_manager->dispatch_alert(&AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::HEIGHT));
 }
 
 void ContainerBox::set_height_str(String length_and_unit){
     height_str = length_and_unit; 
-    height = LengthPair::get_pair(length_and_unit);
+    LengthPair pair = LengthPair::get_pair(length_and_unit);
+    set_height(pair.length, pair.unit_type);
 }
 
 String ContainerBox::get_height_str()
@@ -110,6 +162,7 @@ String ContainerBox::get_height_str()
 
 double ContainerBox::get_height(int unit_type){
     if(unit_type == LengthUnit::NOT_SET) return 0;
+    if(debug_outputs) UtilityFunctions::print("[RUNTIME] Width: ", width.length, " ", width.unit_type);
 
     Size2 window_size = get_tree()->get_root()->get_visible_rect().size;
 
@@ -124,6 +177,7 @@ double ContainerBox::get_height(int unit_type){
 double ContainerBox::editor_get_height(int unit_type)
 {    
     if(unit_type == LengthUnit::NOT_SET) return 0;
+    if(debug_outputs) UtilityFunctions::print("[EDITOR] Height: ", width.length, " ", width.unit_type);
 
     Size2 window_size = Size2(
         ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_width"), 
@@ -133,7 +187,16 @@ double ContainerBox::editor_get_height(int unit_type)
         return ContainerUnitConverter::get_height(height, window_size.y, window_size, unit_type);
     }
 
-    return ContainerUnitConverter::get_height(height, parent->get_height(), window_size, unit_type);
+    return ContainerUnitConverter::get_height(height, parent->editor_get_height(), window_size, unit_type);
+}
+
+void ContainerBox::_notification(int p_what)
+{
+    if(p_what == NOTIFICATION_READY){
+        _ready();
+    }else if(p_what == NOTIFICATION_PROCESS){
+        _process(get_process_delta_time());
+    }
 }
 
 void ContainerBox::_bind_methods(){
@@ -149,6 +212,10 @@ void ContainerBox::_bind_methods(){
 
     ClassDB::bind_method(D_METHOD("set_debug_outputs", "debug_outputs"), &ContainerBox::set_debug_outputs);
     ClassDB::bind_method(D_METHOD("get_debug_outputs"), &ContainerBox::get_debug_outputs);
+
+    ClassDB::bind_method(D_METHOD("set_alert_manager", "manager"), &ContainerBox::set_alert_manager);
+    ClassDB::bind_method(D_METHOD("get_alert_manager"), &ContainerBox::get_alert_manager);
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "alert_manager", PROPERTY_HINT_RESOURCE_TYPE, "alert_manager"), "set_alert_manager", "get_alert_manager");
 }
 
 bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)

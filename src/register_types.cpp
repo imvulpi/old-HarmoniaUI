@@ -2,8 +2,11 @@
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
+
 #include "containers/container_box.h"
 #include "commons/unit_converter.h"
+#include "core/systems/alert/alert.h"
+#include "core/systems/alert/alert_manager.h"
 
 using namespace godot;
 
@@ -12,6 +15,8 @@ void initialize_harmonia(ModuleInitializationLevel p_level) {
 		return;
 	}
 
+	GDREGISTER_VIRTUAL_CLASS(Alert);
+	GDREGISTER_CLASS(AlertManager);
 	GDREGISTER_CLASS(LengthUnit);
 	GDREGISTER_CLASS(ContainerBox);
 }

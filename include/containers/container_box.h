@@ -4,6 +4,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include "commons/container_unit_converter.h"
+#include "core/systems/alert/alert_manager.h"
 
 using namespace godot;
 
@@ -15,18 +16,28 @@ class ContainerBox : public Control
 public:
     ContainerBox() = default;
     ~ContainerBox() = default;
+    // Constants:
+    const String ALERT_LAYOUT_CHANGE = "layout-change";
+
     double update_time = 0;
     double update_interval = 1.0;
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
+    void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input);
 
     /// @brief Updates the container presentation/view in runtime
-    virtual void update_presentation();
+    void update_presentation();
     
     /// @brief [EDITOR] Updates the container presentation/view in editor
-    virtual void editor_update_presentation();
+    void editor_update_presentation();
+    
+    AlertManager* alert_manager;
+    AlertManager* get_alert_manager();
+    void set_alert_manager(AlertManager* manager);
 
     ContainerBox* parent = nullptr;
+    ContainerBox* get_parent_container();
+    godot::List<ContainerBox*> children;
 
     /// @brief Should debug outputs be printed to the console?
     bool debug_outputs = false;
@@ -38,7 +49,6 @@ public:
     /// @brief Gets the debug outputs setting
     /// @return debug outputs option
     bool get_debug_outputs();
-
 
     LengthPair width; /* Width pair, stores length and unit */
 
@@ -96,4 +106,5 @@ protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
     void _get_property_list(List<PropertyInfo> *p_list) const;
+    void _notification(int p_what);
 };
