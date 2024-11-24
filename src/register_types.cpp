@@ -15,9 +15,9 @@ void initialize_harmonia(ModuleInitializationLevel p_level) {
 		return;
 	}
 
+	GDREGISTER_CLASS(Harmonia);
 	GDREGISTER_VIRTUAL_CLASS(Alert);
 	GDREGISTER_CLASS(AlertManager);
-	GDREGISTER_CLASS(LengthUnit);
 	GDREGISTER_CLASS(ContainerBox);
 }
 

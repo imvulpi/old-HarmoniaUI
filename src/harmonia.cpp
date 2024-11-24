@@ -1,7 +1,10 @@
-#include "core/units/unit.h"
+#include "core/harmonia.h"
+#include <godot_cpp/core/class_db.hpp>
 #include "commons/string_helper.h"
 
-LengthPair::LengthPair(int unit_type, double length)
+using namespace godot;
+
+LengthPair::LengthPair(Harmonia::Unit unit_type, double length)
 {
     LengthPair::unit_type = unit_type;
     LengthPair::length = length;
@@ -24,10 +27,10 @@ LengthPair LengthPair::get_pair(String string_pair){
     }
 
     double value = value_string.to_float();
-    int unit = get_unit(unit_string);
+    Harmonia::Unit unit = get_unit(unit_string);
 
     // Converts into an actual float percentage
-    if(unit == LengthUnit::PERCENTAGE){
+    if(unit == Harmonia::Unit::PERCENTAGE){
         value = value/100;
     }
 
@@ -39,16 +42,16 @@ String LengthPair::get_pair_str(LengthPair pair){
     pair_str += String::num(pair.length);
     switch (pair.unit_type)
     {
-        case LengthUnit::PIXEL:
+        case Harmonia::Unit::PIXEL:
             pair_str += "px";
             break;
-        case LengthUnit::PERCENTAGE:
+        case Harmonia::Unit::PERCENTAGE:
             pair_str += "%";
             break;
-        case LengthUnit::VIEWPORT_WIDTH:
+        case Harmonia::Unit::VIEWPORT_WIDTH:
             pair_str += "vw";
             break;
-        case LengthUnit::VIEWPORT_HEIGHT:
+        case Harmonia::Unit::VIEWPORT_HEIGHT:
             pair_str += "vh";
             break;
         default:
@@ -58,16 +61,24 @@ String LengthPair::get_pair_str(LengthPair pair){
     return pair_str;
 }
 
-int LengthPair::get_unit(String unit_string){
+Harmonia::Unit LengthPair::get_unit(String unit_string){
     if(unit_string == "px"){
-        return LengthUnit::PIXEL;
+        return Harmonia::Unit::PIXEL;
     }else if(unit_string == "%"){
-        return LengthUnit::PERCENTAGE;
+        return Harmonia::Unit::PERCENTAGE;
     }else if(unit_string == "vh"){
-        return LengthUnit::VIEWPORT_HEIGHT;
+        return Harmonia::Unit::VIEWPORT_HEIGHT;
     }else if(unit_string == "vw"){
-        return LengthUnit::VIEWPORT_WIDTH;
+        return Harmonia::Unit::VIEWPORT_WIDTH;
     }else{
-        return LengthUnit::NOT_SET;
+        return Harmonia::Unit::NOT_SET;
     }
+}
+
+void Harmonia::_bind_methods(){
+    BIND_ENUM_CONSTANT(NOT_SET);
+    BIND_ENUM_CONSTANT(PIXEL);
+    BIND_ENUM_CONSTANT(PERCENTAGE);
+    BIND_ENUM_CONSTANT(VIEWPORT_WIDTH);
+    BIND_ENUM_CONSTANT(VIEWPORT_HEIGHT);
 }

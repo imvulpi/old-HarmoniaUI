@@ -1,7 +1,7 @@
 #pragma once
 
 #include "commons/unit_converter.h"
-#include "core/units/unit.h"
+#include "core/harmonia.h"
 
 /// @brief A wrapper unit converter for easy use in containers.
 class ContainerUnitConverter : UnitConverter
@@ -16,7 +16,7 @@ public:
     /// @param window_size Root viewport size
     /// @param unit_type Type of the returning width from Length::Unit (default PIXEL)
     /// @return Width in the provided unit type
-    static double get_width(LengthPair pair, double parent_width, Vector2i window_size, int unit_type = LengthUnit::PIXEL);
+    static double get_width(LengthPair pair, double parent_width, Vector2i window_size, int unit_type = Harmonia::Unit::PIXEL);
     
     /// @brief Gets width in pixels from any correct length pair.
     /// @param pair Length and unit
@@ -52,7 +52,7 @@ public:
     /// @param window_size Root viewport size
     /// @param unit_type Type of the returning height from Length::Unit (default PIXEL)
     /// @return height in the provided unit type
-    static double get_height(LengthPair pair, double parent_height, Vector2i window_size, int unit_type = LengthUnit::PIXEL);
+    static double get_height(LengthPair pair, double parent_height, Vector2i window_size, int unit_type = Harmonia::Unit::PIXEL);
     
     /// @brief Gets height in pixels from any correct length pair.
     /// @param pair Length and unit
