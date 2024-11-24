@@ -1,3 +1,7 @@
+# Generated
+/src/gen/
+.sconsign.dblite
+
 # Prerequisites
 *.d
 
@@ -496,3 +500,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+/.vscode
