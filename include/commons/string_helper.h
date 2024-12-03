@@ -2,6 +2,7 @@
 
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/templates/list.hpp>
 
 using namespace godot;
 
@@ -11,3 +12,4 @@ using namespace godot;
 /// @param to String to replace string instances with
 /// @return String with replaced strings to another string
 String replace(String str, String replace, String to);
+List<String> split(String str, String seperator, bool ignore_empty = true);

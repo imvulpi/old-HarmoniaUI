@@ -8,7 +8,9 @@ public:
     enum LayoutChanged {
         WIDTH,
         HEIGHT,
-        POSITION
+        POSITION,
+        MARGIN,
+        PADDING,
         // ... Other will be added
     };
 

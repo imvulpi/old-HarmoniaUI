@@ -18,9 +18,7 @@ class ContainerBox : public Control
 public:
     ContainerBox() = default;
     ~ContainerBox() = default;
-    
-    // Constants:
-    
+        
     /// @brief Alert of layout change, that being position, width, height or other layout change
     const String ALERT_LAYOUT_CHANGE = "layout-change";
 
@@ -33,15 +31,21 @@ public:
 
     /// @brief Update time from the last update
     /// @note This will get removed in the future.
-    double update_time = 0;
+    double update_time {0};
 
     /// @brief The interval of updates 
     /// @note This will get removed in the future.
-    double update_interval = 1.0;
+    double update_interval {1.0};
 
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
     void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input);
+    void draw_ui();
+
+    double get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    double get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    double editor_get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    double editor_get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
 
     /// @brief Updates the container presentation/view in runtime
     void update_presentation();
@@ -64,9 +68,46 @@ public:
     /// @brief gets containerBox parent of this container if one exists.
     /// @return ContainerBox parent or nullptr
     ContainerBox* get_parent_container();
-    
+
+    // Margins go: up right down left
+
+    String margin_str;
+    void set_margin_str(String new_margin);
+    String get_margin_str();
+
+    void set_margin_all(double all_sides, Harmonia::Unit unit_type = Harmonia::PIXEL);
+    void set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit = Harmonia::PIXEL);
+    void set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit = Harmonia::PIXEL);
+
+    TypedArray<double> get_margins(Harmonia::Unit unit_type);
+    TypedArray<double> editor_get_margins(Harmonia::Unit unit_type);
+
+    LengthPair margin_up;
+    void set_margin_up(double up, Harmonia::Unit up_unit);
+    double get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    double editor_get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    LengthPair margin_down;
+    void set_margin_down(double down, Harmonia::Unit down_unit);
+    double get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    double editor_get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    LengthPair margin_left;
+    void set_margin_left(double left, Harmonia::Unit left_unit);
+    double get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    double editor_get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    LengthPair margin_right;
+    void set_margin_right(double right, Harmonia::Unit right_unit);
+    double get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    double editor_get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    Color background_color = Color(0, 0, 0, 0);
+    Color get_background_color();
+    void set_background_color(Color color);
+
     /// @brief The type of positioning of this containers children. Default STATIC.
-    Position position_type = Position::STATIC;
+    Position position_type {Position::STATIC};
 
     /// @brief Sets a positioning type for this containers children.
     void set_position_type(Position new_type);
