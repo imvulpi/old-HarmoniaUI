@@ -118,7 +118,7 @@ void ContainerBox::update_presentation(){
 
 void ContainerBox::update_children_position(TypedArray<Node> children){
     Vector2 position = Vector2(0, 0);
-    // Add margin, padding - Future update.
+    // Add padding - Future update.
     
     for (size_t i = 0; i < children.size(); i++)
     {
@@ -159,7 +159,7 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
 {
     Vector2 position = Vector2(0, 0);
 
-    // Add margin, padding - Future update.
+    // Add padding - Future update.
     for (size_t i = 0; i < children.size(); i++)
     {
         auto current_child = children[i];
@@ -208,7 +208,7 @@ void ContainerBox::set_margin_str(String new_margin){
     if(margin_size == 2){
         LengthPair margin_y = LengthPair::get_pair(margins[0]);
         LengthPair margin_x = LengthPair::get_pair(margins[1]);
-        set_margin_y_vertical(margin_y.length, margin_y.unit_type);
+        set_margin_y_vertical(margin_y.length, margin_y.unit_type, false); // false to avoid duplicate alert.
         set_margin_x_horizontal(margin_x.length, margin_x.unit_type);
         if(debug_outputs) UtilityFunctions::print("Extracted 2 margins:", margin_y.length, margin_x.length);
     }
@@ -235,7 +235,7 @@ String ContainerBox::get_margin_str(){
     return margin_str;
 }
 
-void ContainerBox::set_margin_all(double all_sides, Harmonia::Unit unit_type){
+void ContainerBox::set_margin_all(double all_sides, Harmonia::Unit unit_type, bool dispatch_alert){
     margin_up.length = all_sides;
     margin_up.unit_type = unit_type;
     margin_right.length = all_sides;
@@ -244,48 +244,48 @@ void ContainerBox::set_margin_all(double all_sides, Harmonia::Unit unit_type){
     margin_down.unit_type = unit_type;
     margin_left.length = all_sides;
     margin_left.unit_type = unit_type;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 
-void ContainerBox::set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit){
+void ContainerBox::set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit, bool dispatch_alert){
     margin_up.length = vertical_y;
     margin_up.unit_type = vertical_unit;
     margin_down.length = vertical_y;
     margin_down.unit_type = vertical_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 
-void ContainerBox::set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit){
+void ContainerBox::set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit, bool dispatch_alert){
     margin_right.length = horizontal_x;
     margin_right.unit_type = horizontal_unit;
     margin_left.length = horizontal_x;
     margin_left.unit_type = horizontal_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 
 TypedArray<double> ContainerBox::get_margins(Harmonia::Unit unit_type){
     // up right down left
     TypedArray<double> margins;
-    margins[0] = get_margin_up();
-    margins[1] = get_margin_right();
-    margins[2] = get_margin_down();
-    margins[3] = get_margin_left();
+    margins[0] = get_margin_up(unit_type);
+    margins[1] = get_margin_right(unit_type);
+    margins[2] = get_margin_down(unit_type);
+    margins[3] = get_margin_left(unit_type);
     return margins;
 }
 
 TypedArray<double> ContainerBox::editor_get_margins(Harmonia::Unit unit_type){
     TypedArray<double> margins;
-    margins[0] = editor_get_margin_up();
-    margins[1] = editor_get_margin_right();
-    margins[2] = editor_get_margin_down();
-    margins[3] = editor_get_margin_left();
+    margins[0] = editor_get_margin_up(unit_type);
+    margins[1] = editor_get_margin_right(unit_type);
+    margins[2] = editor_get_margin_down(unit_type);
+    margins[3] = editor_get_margin_left(unit_type);
     return margins;
 }
 
-void ContainerBox::set_margin_up(double up, Harmonia::Unit up_unit){
+void ContainerBox::set_margin_up(double up, Harmonia::Unit up_unit, bool dispatch_alert){
     margin_up.length = up;
     margin_up.unit_type = up_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 
 double ContainerBox::get_margin_up(Harmonia::Unit unit_type){
@@ -296,10 +296,10 @@ double ContainerBox::editor_get_margin_up(Harmonia::Unit unit_type){
     return editor_get_height_length_pair_unit(margin_up, unit_type);
 }
 
-void ContainerBox::set_margin_down(double down, Harmonia::Unit down_unit){
+void ContainerBox::set_margin_down(double down, Harmonia::Unit down_unit, bool dispatch_alert){
     margin_down.length = down;
     margin_down.unit_type = down_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 
 double ContainerBox::get_margin_down(Harmonia::Unit unit_type){
@@ -310,10 +310,10 @@ double ContainerBox::editor_get_margin_down(Harmonia::Unit unit_type){
     return editor_get_height_length_pair_unit(margin_down, unit_type);
 }
 
-void ContainerBox::set_margin_left(double left, Harmonia::Unit left_unit){
+void ContainerBox::set_margin_left(double left, Harmonia::Unit left_unit, bool dispatch_alert){
     margin_left.length = left;
     margin_left.unit_type = left_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
 }
 double ContainerBox::get_margin_left(Harmonia::Unit unit_type){
     return get_width_length_pair_unit(margin_left, unit_type);
@@ -323,10 +323,10 @@ double ContainerBox::editor_get_margin_left(Harmonia::Unit unit_type){
     return editor_get_width_length_pair_unit(margin_left, unit_type);
 }
 
-void ContainerBox::set_margin_right(double right, Harmonia::Unit right_unit){
+void ContainerBox::set_margin_right(double right, Harmonia::Unit right_unit, bool dispatch_alert){
     margin_right.length = right;
     margin_right.unit_type = right_unit;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));    
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));    
 }
 
 double ContainerBox::get_margin_right(Harmonia::Unit unit_type){

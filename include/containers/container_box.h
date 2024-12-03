@@ -40,11 +40,32 @@ public:
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
     void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input);
+
+    /// @brief Functions as _draw but doesnt override the _draw instead it's used when draw notification is emmited.  
     void draw_ui();
 
+    /// @brief Helper function for getting width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair The LengthPair you want the width from.
+    /// @param unit_type Harmonia unit you want the width to be in.
+    /// @return Width in the specified unit you want.
     double get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief Helper function for getting height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair The LengthPair you want the height from.
+    /// @param unit_type Harmonia unit you want the height to be in.
+    /// @return Height in the specified unit you want.
     double get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief [EDITOR] Helper function for getting height of a provided LengthPair in any Harmonia unit specifically for editor (Here to remove repetitions)
+    /// @param pair The LengthPair you want the height from.
+    /// @param unit_type Harmonia unit you want the height to be in.
+    /// @return Height in the specified unit you want.
     double editor_get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief [EDITOR] Helper function for getting width of a provided LengthPair in any Harmonia unit specifically for editor (Here to remove repetitions)
+    /// @param pair The LengthPair you want the width from.
+    /// @param unit_type Harmonia unit you want the width to be in.
+    /// @return Width in the specified unit you want.
     double editor_get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
 
     /// @brief Updates the container presentation/view in runtime
@@ -59,7 +80,9 @@ public:
     
     /// @brief Alert manager of this containers. Bind to this manager if you want to react to this containers alerts
     AlertManager* alert_manager = memnew(AlertManager);
+    /// @brief A simple getter for alert manager of this container
     AlertManager* get_alert_manager();
+    /// @brief A simple setter for alert manager of this container
     void set_alert_manager(AlertManager* manager);
 
     /// @brief ContainerBox parent of this container, only ContainerBox classes are set.
@@ -69,41 +92,86 @@ public:
     /// @return ContainerBox parent or nullptr
     ContainerBox* get_parent_container();
 
-    // Margins go: up right down left
+    /// NOTE: Margins go: [0: up] [1: right] [2: down] [3: left]
 
+    /// @brief Margins in string which later gets processed to retrieve up/down/left/right margins. 
     String margin_str;
+    /// @brief Setter for string margin, processes the new margin in order to retrieve actual margins.
     void set_margin_str(String new_margin);
+    /// @brief Simple getter for string margin. 
     String get_margin_str();
 
-    void set_margin_all(double all_sides, Harmonia::Unit unit_type = Harmonia::PIXEL);
-    void set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit = Harmonia::PIXEL);
-    void set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit = Harmonia::PIXEL);
+    /// @brief A helper function to set all margins with the same value and unit.
+    /// @param all_sides value of each side.
+    /// @param unit_type unit type of each side.
+    void set_margin_all(double all_sides, Harmonia::Unit unit_type = Harmonia::PIXEL, bool dispatch_alert = true);
+    /// @brief A helper function to set margins on the y/vertical axis (specifically down/up)
+    /// @param vertical_y value of each y/vertical sides (down/up)
+    /// @param vertical_unit unit type of each y/vertical sides (down/up)
+    void set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit = Harmonia::PIXEL, bool dispatch_alert = true);
+    
+    /// @brief A helper function to set margins on the x/horizontal axis (specifically left/right)
+    /// @param horizontal_x value of each x/horizontal sides (left/right)
+    /// @param horizontal_unit unit type of each x/horizontal sides (left/right)
+    void set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit = Harmonia::PIXEL, bool dispatch_alert = true);
 
-    TypedArray<double> get_margins(Harmonia::Unit unit_type);
-    TypedArray<double> editor_get_margins(Harmonia::Unit unit_type);
+    /// @brief A helper function to get all margins as a typed array. 
+    /// 
+    /// indexes values are: 0-up, 1-right, 2-down, 3-left 
+    /// @param unit_type what unit type should the margins be in.
+    TypedArray<double> get_margins(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
+    /// @brief [EDITOR] A helper function to get all margins as a typed array for the editor. 
+    ///
+    /// indexes values are: 0-up, 1-right, 2-down, 3-left 
+    /// @param unit_type what unit type should the margins be in.
+    TypedArray<double> editor_get_margins(Harmonia::Unit unit_type = Harmonia::PIXEL);
+
+    /// @brief Upper(Up) margin of this container
     LengthPair margin_up;
-    void set_margin_up(double up, Harmonia::Unit up_unit);
+    /// @brief Simple setter for the upper(Up) margin, dispatches an alert.
+    /// @param dispatch_alert Whether an alert for margin change should be dispatched
+    void set_margin_up(double up, Harmonia::Unit up_unit, bool dispatch_alert = true);
+    /// @brief Simple getter for the upper(Up) margin in any harmonia unit
     double get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    /// @brief [EDITOR] Simple getter for the upper(Up) margin in any harmonia unit
     double editor_get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
+    
+    /// @brief Lower(Down) margin of this container
     LengthPair margin_down;
-    void set_margin_down(double down, Harmonia::Unit down_unit);
+    /// @brief Simple setter for the lower(Down) margin, dispatches an alert.
+    /// @param dispatch_alert Whether an alert for margin change should be dispatched
+    void set_margin_down(double down, Harmonia::Unit down_unit, bool dispatch_alert = true);
+    /// @brief Simple getter for the lower(Down) margin in any harmonia unit
     double get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    /// @brief [EDITOR] Simple getter for the lower(Down) margin in any harmonia unit
     double editor_get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
+    /// @brief Left margin of this container
     LengthPair margin_left;
-    void set_margin_left(double left, Harmonia::Unit left_unit);
+    /// @brief Simple setter for the left margin, dispatches an alert.
+    /// @param dispatch_alert Whether an alert for margin change should be dispatched
+    void set_margin_left(double left, Harmonia::Unit left_unit, bool dispatch_alert = true);
+    /// @brief Simple getter for the left margin in any harmonia unit
     double get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    /// @brief [EDITOR] Simple getter for the left margin in any harmonia unit
     double editor_get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
+   
+    /// @brief Right margin of this container
     LengthPair margin_right;
-    void set_margin_right(double right, Harmonia::Unit right_unit);
+    /// @brief Simple setter for the right margin, dispatches an alert.
+    /// @param dispatch_alert Whether an alert for margin change should be dispatched
+    void set_margin_right(double right, Harmonia::Unit right_unit, bool dispatch_alert = true);
+    /// @brief Simple getter for the right margin in any harmonia unit
     double get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+    /// @brief [EDITOR] Simple getter for the right margin in any harmonia unit
     double editor_get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
+    /// @brief Background color of this container, by default transparent.
     Color background_color = Color(0, 0, 0, 0);
+    /// @brief Simple getter for the background color of this container
     Color get_background_color();
+    /// @brief Simple setter for the background color of this container. Additionally calls for redraw so setting background color has a close to immediate effect.
     void set_background_color(Color color);
 
     /// @brief The type of positioning of this containers children. Default STATIC.
@@ -114,8 +182,8 @@ public:
     /// @brief Returns the positioning type for this containers children
     Position get_position_type();
     
-    /// BELOW Str pos are positions set in the editor or in the code using getter/setter
-    /// They string posistions get processed to create a pos_x length pair. Ex of str pos: 10%, 10px
+    /// NOTE: BELOW Str pos are positions set in the editor or in the code using getter/setter
+    /// The string positions get processed to create a pos_x length pair. Ex of str pos: 10%, 10px
 
     /// @brief X Position of this container.
     LengthPair pos_x;

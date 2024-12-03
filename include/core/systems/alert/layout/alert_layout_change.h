@@ -1,26 +1,29 @@
 #include <godot_cpp/core/class_db.hpp>
 #include "core/systems/alert/alert.h"
 
-/// @brief Work In Progress. This class will allow you to bind to a layout change alert in a alert system.
+/// @brief Class which allows for binding for size, position, or margin layout changes
 class AlertLayoutChange : public Alert
 {
+    GDCLASS(AlertLayoutChange, Alert);
 public:
     enum LayoutChanged {
+        UNSPECIFIED,
         WIDTH,
         HEIGHT,
         POSITION,
         MARGIN,
         PADDING,
-        // ... Other will be added
     };
 
     AlertLayoutChange() = default;
     AlertLayoutChange(String name, LayoutChanged changed);
     
-    LayoutChanged layout_changed;
+    /// @brief The specific layout that was changed.
+    LayoutChanged layout_changed {LayoutChanged::UNSPECIFIED};
+    /// @brief Gets this alerts name 
     String get_alert_name() const;
 protected:
-    void _bind_methods();
+    static void _bind_methods();
 };
 
 inline String AlertLayoutChange::get_alert_name() const
