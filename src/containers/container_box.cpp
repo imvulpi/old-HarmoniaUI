@@ -511,9 +511,22 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("set_pos_y", "new_y", "unit_type"), &ContainerBox::set_pos_y);
     ClassDB::bind_method(D_METHOD("get_pos_y", "unit_type"), &ContainerBox::get_pos_y);
 
+    ClassDB::bind_method(D_METHOD("set_margin_all", "all_sides", "unit_type", "dispatch_alert"), &ContainerBox::set_margin_all, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("set_margin_y_vertical", "vertical_y", "vertical_unit", "dispatch_alert"), &ContainerBox::set_margin_y_vertical, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("set_margin_x_horizontal", "horizontal_x", "horizontal_unit", "dispatch_alert"), &ContainerBox::set_margin_x_horizontal, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_margins", "unit_type"), &ContainerBox::get_margins, DEFVAL(Harmonia::PIXEL));
+
     ClassDB::bind_method(D_METHOD("set_margin_str", "new_margin"), &ContainerBox::set_margin_str);
     ClassDB::bind_method(D_METHOD("get_margin_str"), &ContainerBox::get_margin_str);
-
+    ClassDB::bind_method(D_METHOD("set_margin_up", "up_margin", "up_unit", "dispatch_alert"), &ContainerBox::set_margin_up, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_margin_up", "unit_type"), &ContainerBox::get_margin_up, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_margin_right", "right_margin", "right_unit", "dispatch_alert"), &ContainerBox::set_margin_right, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_margin_right", "unit_type"), &ContainerBox::get_margin_right, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_margin_down", "down_margin", "down_unit", "dispatch_alert"), &ContainerBox::set_margin_down, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_margin_down", "unit_type"), &ContainerBox::get_margin_down, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_margin_left", "left_margin", "left_unit", "dispatch_alert"), &ContainerBox::set_margin_left, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_margin_left", "unit_type"), &ContainerBox::get_margin_left, DEFVAL(Harmonia::PIXEL));
+    
     ClassDB::bind_method(D_METHOD("set_background_color", "color"), &ContainerBox::set_background_color);
     ClassDB::bind_method(D_METHOD("get_background_color"), &ContainerBox::get_background_color);
 
