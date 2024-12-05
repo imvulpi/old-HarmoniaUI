@@ -196,6 +196,148 @@ ContainerBox* ContainerBox::get_parent_container()
     return nullptr;
 }
 
+void ContainerBox::set_padding_str(String new_padding){
+    List<String> paddings = split(new_padding, " ", true);
+    int padding_size = paddings.size();
+    padding_str = new_padding;
+    if(padding_size == 1){
+        LengthPair padding_all = LengthPair::get_pair(new_padding);
+        set_padding_all(padding_all.length, padding_all.unit_type);
+        if(debug_outputs) UtilityFunctions::print("Extracted 1 padding:", padding_all.length);
+    }
+    if(padding_size == 2){
+        LengthPair padding_y = LengthPair::get_pair(paddings[0]);
+        LengthPair padding_x = LengthPair::get_pair(paddings[1]);
+        set_padding_y_vertical(padding_y.length, padding_y.unit_type, false); // false to avoid duplicate alert.
+        set_padding_x_horizontal(padding_x.length, padding_x.unit_type);
+        if(debug_outputs) UtilityFunctions::print("Extracted 2 paddings:", padding_y.length, padding_x.length);
+    }
+    if(padding_size == 3){
+        padding_up = LengthPair::get_pair(paddings[0]);
+        LengthPair padding_x = LengthPair::get_pair(paddings[1]);
+        padding_down = LengthPair::get_pair(paddings[2]);
+        set_padding_x_horizontal(padding_x.length, padding_x.unit_type);
+        if(debug_outputs) UtilityFunctions::print("Extracted 3 paddings:", padding_up.length, padding_x.length, padding_down.length);
+    }
+    if(padding_size == 4){
+        padding_up = LengthPair::get_pair(paddings[0]);
+        padding_right = LengthPair::get_pair(paddings[1]);
+        padding_down = LengthPair::get_pair(paddings[2]);
+        padding_left = LengthPair::get_pair(paddings[3]);
+        if(debug_outputs) UtilityFunctions::print("Extracted 4 paddings:", padding_up.length, padding_right.length, padding_down.length, padding_left.length);
+    }
+    else{
+        if(debug_outputs) UtilityFunctions::print("Wrong padding str, couldnt extract any paddings");
+    }
+}
+
+String ContainerBox::get_padding_str(){
+    return padding_str;
+}
+
+void ContainerBox::set_padding_all(double all_sides, Harmonia::Unit unit_type, bool dispatch_alert){
+    padding_up.length = all_sides;
+    padding_up.unit_type = unit_type;
+    padding_right.length = all_sides;
+    padding_right.unit_type = unit_type;
+    padding_down.length = all_sides;
+    padding_down.unit_type = unit_type;
+    padding_left.length = all_sides;
+    padding_left.unit_type = unit_type;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+void ContainerBox::set_padding_y_vertical(double vertical_y, Harmonia::Unit vertical_unit, bool dispatch_alert){
+    padding_up.length = vertical_y;
+    padding_up.unit_type = vertical_unit;
+    padding_down.length = vertical_y;
+    padding_down.unit_type = vertical_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+void ContainerBox::set_padding_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit, bool dispatch_alert){
+    padding_right.length = horizontal_x;
+    padding_right.unit_type = horizontal_unit;
+    padding_left.length = horizontal_x;
+    padding_left.unit_type = horizontal_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+TypedArray<double> ContainerBox::get_paddings(Harmonia::Unit unit_type){
+    // up right down left
+    TypedArray<double> paddings;
+    paddings[0] = get_padding_up(unit_type);
+    paddings[1] = get_padding_right(unit_type);
+    paddings[2] = get_padding_down(unit_type);
+    paddings[3] = get_padding_left(unit_type);
+    return paddings;
+}
+
+TypedArray<double> ContainerBox::editor_get_paddings(Harmonia::Unit unit_type){
+    TypedArray<double> paddings;
+    paddings[0] = editor_get_padding_up(unit_type);
+    paddings[1] = editor_get_padding_right(unit_type);
+    paddings[2] = editor_get_padding_down(unit_type);
+    paddings[3] = editor_get_padding_left(unit_type);
+    return paddings;
+}
+
+void ContainerBox::set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert){
+    padding_up.length = up;
+    padding_up.unit_type = up_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+double ContainerBox::get_padding_up(Harmonia::Unit unit_type){
+    return get_height_length_pair_unit(padding_up, unit_type);
+}
+
+double ContainerBox::editor_get_padding_up(Harmonia::Unit unit_type){
+    return editor_get_height_length_pair_unit(padding_up, unit_type);
+}
+
+void ContainerBox::set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert){
+    padding_down.length = down;
+    padding_down.unit_type = down_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+double ContainerBox::get_padding_down(Harmonia::Unit unit_type){
+    return get_height_length_pair_unit(padding_down, unit_type);
+}
+
+double ContainerBox::editor_get_padding_down(Harmonia::Unit unit_type){
+    return editor_get_height_length_pair_unit(padding_down, unit_type);
+}
+
+void ContainerBox::set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert){
+    padding_left.length = left;
+    padding_left.unit_type = left_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+}
+
+double ContainerBox::get_padding_left(Harmonia::Unit unit_type){
+    return get_width_length_pair_unit(padding_left, unit_type);
+}
+
+double ContainerBox::editor_get_padding_left(Harmonia::Unit unit_type){
+    return editor_get_width_length_pair_unit(padding_left, unit_type);
+}
+
+void ContainerBox::set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert){
+    padding_right.length = right;
+    padding_right.unit_type = right_unit;
+    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));    
+}
+
+double ContainerBox::get_padding_right(Harmonia::Unit unit_type){
+    return get_width_length_pair_unit(padding_right, unit_type);
+}
+
+double ContainerBox::editor_get_padding_right(Harmonia::Unit unit_type){
+    return editor_get_width_length_pair_unit(padding_right, unit_type);
+}
+
 void ContainerBox::set_margin_str(String new_margin){
     List<String> margins = split(new_margin, " ", true);
     int margin_size = margins.size();
@@ -527,6 +669,22 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("set_margin_left", "left_margin", "left_unit", "dispatch_alert"), &ContainerBox::set_margin_left, DEFVAL(true));
     ClassDB::bind_method(D_METHOD("get_margin_left", "unit_type"), &ContainerBox::get_margin_left, DEFVAL(Harmonia::PIXEL));
     
+    ClassDB::bind_method(D_METHOD("set_padding_all", "all_sides", "unit_type", "dispatch_alert"), &ContainerBox::set_padding_all, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("set_padding_y_vertical", "vertical_y", "vertical_unit", "dispatch_alert"), &ContainerBox::set_padding_y_vertical, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("set_padding_x_horizontal", "horizontal_x", "horizontal_unit", "dispatch_alert"), &ContainerBox::set_padding_x_horizontal, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_paddings", "unit_type"), &ContainerBox::get_paddings, DEFVAL(Harmonia::PIXEL));
+
+    ClassDB::bind_method(D_METHOD("set_padding_str", "new_padding"), &ContainerBox::set_padding_str);
+    ClassDB::bind_method(D_METHOD("get_padding_str"), &ContainerBox::get_padding_str);
+    ClassDB::bind_method(D_METHOD("set_padding_up", "up_padding", "up_unit", "dispatch_alert"), &ContainerBox::set_padding_up, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_padding_up", "unit_type"), &ContainerBox::get_padding_up, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_padding_right", "right_padding", "right_unit", "dispatch_alert"), &ContainerBox::set_padding_right, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_padding_right", "unit_type"), &ContainerBox::get_padding_right, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_padding_down", "down_padding", "down_unit", "dispatch_alert"), &ContainerBox::set_padding_down, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_padding_down", "unit_type"), &ContainerBox::get_padding_down, DEFVAL(Harmonia::PIXEL));
+    ClassDB::bind_method(D_METHOD("set_padding_left", "left_padding", "left_unit", "dispatch_alert"), &ContainerBox::set_padding_left, DEFVAL(true));
+    ClassDB::bind_method(D_METHOD("get_padding_left", "unit_type"), &ContainerBox::get_padding_left, DEFVAL(Harmonia::PIXEL));
+
     ClassDB::bind_method(D_METHOD("set_background_color", "color"), &ContainerBox::set_background_color);
     ClassDB::bind_method(D_METHOD("get_background_color"), &ContainerBox::get_background_color);
 
@@ -541,6 +699,7 @@ void ContainerBox::_bind_methods(){
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_x_str", PROPERTY_HINT_TYPE_STRING, "pos_x_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_x_str", "get_pos_x_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_y_str", PROPERTY_HINT_TYPE_STRING, "pos_y_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_y_str", "get_pos_y_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "margin_str", PROPERTY_HINT_TYPE_STRING, "margin_str", PROPERTY_USAGE_NO_EDITOR), "set_margin_str", "get_margin_str");
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "padding_str", PROPERTY_HINT_TYPE_STRING, "padding_str", PROPERTY_USAGE_NO_EDITOR), "set_padding_str", "get_padding_str");
     ADD_PROPERTY(PropertyInfo(Variant::COLOR, "background_color", PROPERTY_HINT_NONE, "background_color", PROPERTY_USAGE_NO_EDITOR), "set_background_color", "get_background_color");
 }
 
@@ -555,6 +714,9 @@ bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)
         return true;
     }else if(name == "margin_str"){
         set_margin_str(p_value);
+        return true;
+    }else if(name == "padding_str"){
+        set_padding_str(p_value);
         return true;
     }else if(name == "background_color"){
         set_background_color(p_value);
@@ -584,7 +746,10 @@ bool ContainerBox::_get(const StringName &p_name, Variant &r_ret) const
         return true;
     }else if(name == "margin_str"){
         r_ret = margin_str;
-        return true;   
+        return true;
+    }else if(name == "padding_str"){
+        r_ret = padding_str;
+        return true;
     }else if(name == "background_color"){
         r_ret = background_color;
         return true;
@@ -606,6 +771,7 @@ void ContainerBox::_get_property_list(List<PropertyInfo> *p_list) const
     p_list->push_back(PropertyInfo(Variant::STRING, "width_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "height_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "margin_str"));
+    p_list->push_back(PropertyInfo(Variant::STRING, "padding_str"));
     p_list->push_back(PropertyInfo(Variant::COLOR, "background_color"));
     p_list->push_back(PropertyInfo(Variant::BOOL, "debug_outputs"));
     p_list->push_back(PropertyInfo(Variant::STRING, "pos_x_str"));
