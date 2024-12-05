@@ -40,10 +40,10 @@ struct LengthPair{
     /// @brief The unit of the value
     ///
     /// For simpliticy of calculations: % are actual precentages in length ex. 10% is 0.1
-    Harmonia::Unit unit_type;
+    Harmonia::Unit unit_type {Harmonia::Unit::NOT_SET};
     
     /// @brief The value - length of the pair
-    double length;
+    double length {0};
 
     /// @brief Constructs a Length pair with existing unit and length
     /// @param unit_type The unit of the value/length
