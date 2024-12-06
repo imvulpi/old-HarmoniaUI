@@ -38,8 +38,13 @@ void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input)
 }
 
 void ContainerBox::draw_ui(){
-    Rect2 rect = Rect2(Vector2(0, 0), get_size());
-    draw_rect(rect, background_color);
+    if(Engine::get_singleton()->is_editor_hint()){
+        Rect2 rect = Rect2(Vector2(-editor_get_padding_left(), -editor_get_padding_up()), Size2(editor_calculate_total_width(), editor_calculate_total_height()));
+        draw_rect(rect, background_color);
+    }else{
+        Rect2 rect = Rect2(Vector2(-get_padding_left(), -get_padding_up()), Size2(calculate_total_width(), calculate_total_height()));
+        draw_rect(rect, background_color);
+    }
 }
 
 double ContainerBox::get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
@@ -111,7 +116,7 @@ void ContainerBox::update_presentation(){
     }
     
     Vector2 new_size = Vector2(get_width(), get_height());
-    if(debug_outputs) UtilityFunctions::print("[RUNTIME] New size: ", new_size);
+
     ContainerBox::set_size(new_size);
     update_children_position(get_children());
 }
@@ -125,21 +130,35 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
         auto current_child = children[i];
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
             if(container->position_type == Position::STATIC){
-                position.y += container->get_margin_up();                
-                container->set_position(Vector2(position.x + container->get_margin_left(), position.y));
+                position.y += container->get_margin_up();
+                position.y += container->get_padding_up();
+                container->set_position(Vector2(position.x + container->get_margin_left() + container->get_padding_left(),
+                                                position.y));
                 position.y += container->get_height();
                 position.y += container->get_margin_down();
+                position.y += container->get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->get_pos_x(), container->get_pos_y()));
+                container->set_position(Vector2(container->get_pos_x()+container->get_padding_left()+container->get_margin_left(), 
+                                                container->get_pos_y()+container->get_padding_up()+container->get_margin_up()));                
             }else if(container-> position_type == Position::RELATIVE){
-                position.y += container->get_margin_up();                
-                container->set_position(Vector2(position.x + container->get_margin_left() + container->get_pos_x(), position.y + container->get_pos_y()));
-                position.y += container->editor_get_height();
+                position.y += container->get_margin_up();
+                position.y += container->get_padding_up();
+                container->set_position(Vector2(position.x + container->get_margin_left() + container->get_padding_left() + container->get_pos_x(),
+                                                position.y + container->get_pos_y()));
+                position.y += container->get_height();
                 position.y += container->get_margin_down();
+                position.y += container->get_padding_down();
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
             control->set_position(position);
             position.y += control->get_size().y;
+
+            // Resets offsets to 0, this fixes the issue with anchors being badly set whenether they overflow.
+            // This also disables the use of offsets :/
+            control->set_offset(Side::SIDE_LEFT, 0);
+            control->set_offset(Side::SIDE_TOP, 0);
+            control->set_offset(Side::SIDE_RIGHT, 0);
+            control->set_offset(Side::SIDE_BOTTOM, 0);            
         }
     }
 }
@@ -150,7 +169,6 @@ void ContainerBox::editor_update_presentation(){
     }
 
     Vector2 new_size = Vector2(editor_get_width(), editor_get_height());
-    if(debug_outputs) UtilityFunctions::print("[EDITOR] New size: ", new_size);
     ContainerBox::set_size(new_size);
     editor_update_children_position(get_children());
 }
@@ -166,17 +184,24 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
             if(container->position_type == Position::STATIC){
                 position.y += container->editor_get_margin_up();
-                container->set_position(Vector2(position.x + container->editor_get_margin_left(), position.y));
+                position.y += container->editor_get_padding_up();
+                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left(), 
+                                                position.y));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
+                position.y += container->editor_get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->editor_get_pos_x(), container->editor_get_pos_y()));
+                container->set_position(Vector2(container->editor_get_pos_x()+container->editor_get_padding_left()+container->editor_get_margin_left(), 
+                                                container->editor_get_pos_y()+container->editor_get_padding_up()+container->editor_get_margin_up()));
             }else if(container-> position_type == Position::RELATIVE){
                 position.y += container->editor_get_margin_up();
-                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_pos_x(), 
+                position.y += container->editor_get_padding_up();
+                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left() + container->editor_get_pos_x(), 
                                         position.y + container->editor_get_pos_y()));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
+                position.y += container->editor_get_padding_down();
+                
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
             control->set_position(position);
@@ -224,6 +249,9 @@ void ContainerBox::set_padding_str(String new_padding){
         padding_right = LengthPair::get_pair(paddings[1]);
         padding_down = LengthPair::get_pair(paddings[2]);
         padding_left = LengthPair::get_pair(paddings[3]);
+
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
         if(debug_outputs) UtilityFunctions::print("Extracted 4 paddings:", padding_up.length, padding_right.length, padding_down.length, padding_left.length);
     }
     else{
@@ -235,7 +263,7 @@ String ContainerBox::get_padding_str(){
     return padding_str;
 }
 
-void ContainerBox::set_padding_all(double all_sides, Harmonia::Unit unit_type, bool dispatch_alert){
+void ContainerBox::set_padding_all(double all_sides, Harmonia::Unit unit_type, bool dispatch_alert_and_queue){
     padding_up.length = all_sides;
     padding_up.unit_type = unit_type;
     padding_right.length = all_sides;
@@ -244,23 +272,35 @@ void ContainerBox::set_padding_all(double all_sides, Harmonia::Unit unit_type, b
     padding_down.unit_type = unit_type;
     padding_left.length = all_sides;
     padding_left.unit_type = unit_type;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
-void ContainerBox::set_padding_y_vertical(double vertical_y, Harmonia::Unit vertical_unit, bool dispatch_alert){
+void ContainerBox::set_padding_y_vertical(double vertical_y, Harmonia::Unit vertical_unit, bool dispatch_alert_and_queue){
     padding_up.length = vertical_y;
     padding_up.unit_type = vertical_unit;
     padding_down.length = vertical_y;
     padding_down.unit_type = vertical_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
-void ContainerBox::set_padding_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit, bool dispatch_alert){
+void ContainerBox::set_padding_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit, bool dispatch_alert_and_queue){
     padding_right.length = horizontal_x;
     padding_right.unit_type = horizontal_unit;
     padding_left.length = horizontal_x;
     padding_left.unit_type = horizontal_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
 TypedArray<double> ContainerBox::get_paddings(Harmonia::Unit unit_type){
@@ -282,10 +322,14 @@ TypedArray<double> ContainerBox::editor_get_paddings(Harmonia::Unit unit_type){
     return paddings;
 }
 
-void ContainerBox::set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert){
+void ContainerBox::set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert_and_queue){
     padding_up.length = up;
     padding_up.unit_type = up_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
 double ContainerBox::get_padding_up(Harmonia::Unit unit_type){
@@ -296,10 +340,14 @@ double ContainerBox::editor_get_padding_up(Harmonia::Unit unit_type){
     return editor_get_height_length_pair_unit(padding_up, unit_type);
 }
 
-void ContainerBox::set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert){
+void ContainerBox::set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert_and_queue){
     padding_down.length = down;
     padding_down.unit_type = down_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
 double ContainerBox::get_padding_down(Harmonia::Unit unit_type){
@@ -310,10 +358,14 @@ double ContainerBox::editor_get_padding_down(Harmonia::Unit unit_type){
     return editor_get_height_length_pair_unit(padding_down, unit_type);
 }
 
-void ContainerBox::set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert){
+void ContainerBox::set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert_and_queue){
     padding_left.length = left;
     padding_left.unit_type = left_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }
 }
 
 double ContainerBox::get_padding_left(Harmonia::Unit unit_type){
@@ -324,10 +376,14 @@ double ContainerBox::editor_get_padding_left(Harmonia::Unit unit_type){
     return editor_get_width_length_pair_unit(padding_left, unit_type);
 }
 
-void ContainerBox::set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert){
+void ContainerBox::set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert_and_queue){
     padding_right.length = right;
     padding_right.unit_type = right_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));    
+    if (dispatch_alert_and_queue)
+    {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        queue_redraw();
+    }    
 }
 
 double ContainerBox::get_padding_right(Harmonia::Unit unit_type){
@@ -558,6 +614,14 @@ double ContainerBox::get_width(Harmonia::Unit unit_type){
     return get_width_length_pair_unit(width, unit_type);
 }
 
+double ContainerBox::calculate_total_width(Harmonia::Unit unit_type){
+    return get_width_length_pair_unit(width, unit_type) + get_padding_left(unit_type) + get_padding_right(unit_type);
+}
+
+double ContainerBox::editor_calculate_total_width(Harmonia::Unit unit_type){
+    return editor_get_width_length_pair_unit(width, unit_type) + editor_get_padding_left(unit_type) + editor_get_padding_right(unit_type);    
+}
+
 void ContainerBox::set_width(double length, Harmonia::Unit unit_type){
     ContainerBox::width.length = length;
     ContainerBox::width.unit_type = unit_type;
@@ -599,6 +663,14 @@ String ContainerBox::get_height_str()
 
 double ContainerBox::get_height(Harmonia::Unit unit_type){
     return get_height_length_pair_unit(height, unit_type);
+}
+
+double ContainerBox::calculate_total_height(Harmonia::Unit unit_type){
+    return get_height_length_pair_unit(height, unit_type) + get_padding_up(unit_type) + get_padding_down(unit_type);
+}
+
+double ContainerBox::editor_calculate_total_height(Harmonia::Unit unit_type){
+    return editor_get_height_length_pair_unit(height, unit_type) + editor_get_padding_up(unit_type) + editor_get_padding_down(unit_type);
 }
 
 double ContainerBox::editor_get_height(Harmonia::Unit unit_type)

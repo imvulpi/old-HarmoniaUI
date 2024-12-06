@@ -104,16 +104,16 @@ public:
     /// @brief A helper function to set all paddings with the same value and unit.
     /// @param all_sides value of each side.
     /// @param unit_type unit type of each side.
-    void set_padding_all(double all_sides, Harmonia::Unit unit_type = Harmonia::PIXEL, bool dispatch_alert = true);
+    void set_padding_all(double all_sides, Harmonia::Unit unit_type = Harmonia::PIXEL, bool dispatch_alert_and_queue = true);
     /// @brief A helper function to set paddings on the y/vertical axis (specifically down/up)
     /// @param vertical_y value of each y/vertical sides (down/up)
     /// @param vertical_unit unit type of each y/vertical sides (down/up)
-    void set_padding_y_vertical(double vertical_y, Harmonia::Unit vertical_unit = Harmonia::PIXEL, bool dispatch_alert = true);
+    void set_padding_y_vertical(double vertical_y, Harmonia::Unit vertical_unit = Harmonia::PIXEL, bool dispatch_alert_and_queue = true);
     
     /// @brief A helper function to set paddings on the x/horizontal axis (specifically left/right)
     /// @param horizontal_x value of each x/horizontal sides (left/right)
     /// @param horizontal_unit unit type of each x/horizontal sides (left/right)
-    void set_padding_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit = Harmonia::PIXEL, bool dispatch_alert = true);
+    void set_padding_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit = Harmonia::PIXEL, bool dispatch_alert_and_queue = true);
 
     /// @brief A helper function to get all paddings as a typed array. 
     /// 
@@ -130,8 +130,8 @@ public:
     /// @brief Upper(Up) padding of this container
     LengthPair padding_up;
     /// @brief Simple setter for the upper(Up) padding, dispatches an alert.
-    /// @param dispatch_alert Whether an alert for padding change should be dispatched
-    void set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert = true);
+    /// @param dispatch_alert_and_queue Whether an alert for padding change should be dispatched and draw queued.
+    void set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the upper(Up) padding in any harmonia unit
     double get_padding_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     /// @brief [EDITOR] Simple getter for the upper(Up) padding in any harmonia unit
@@ -140,8 +140,8 @@ public:
     /// @brief Lower(Down) padding of this container
     LengthPair padding_down;
     /// @brief Simple setter for the lower(Down) padding, dispatches an alert.
-    /// @param dispatch_alert Whether an alert for padding change should be dispatched
-    void set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert = true);
+    /// @param dispatch_alert_and_queue Whether an alert for padding change should be dispatched and draw queued.
+    void set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the lower(Down) padding in any harmonia unit
     double get_padding_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     /// @brief [EDITOR] Simple getter for the lower(Down) padding in any harmonia unit
@@ -150,8 +150,8 @@ public:
     /// @brief Left padding of this container
     LengthPair padding_left;
     /// @brief Simple setter for the left padding, dispatches an alert.
-    /// @param dispatch_alert Whether an alert for padding change should be dispatched
-    void set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert = true);
+    /// @param dispatch_alert_and_queue Whether an alert for padding change should be dispatched and draw queued.
+    void set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the left padding in any harmonia unit
     double get_padding_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     /// @brief [EDITOR] Simple getter for the left padding in any harmonia unit
@@ -160,8 +160,8 @@ public:
     /// @brief Right padding of this container
     LengthPair padding_right;
     /// @brief Simple setter for the right padding, dispatches an alert.
-    /// @param dispatch_alert Whether an alert for padding change should be dispatched
-    void set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert = true);
+    /// @param dispatch_alert_and_queue Whether an alert for padding change should be dispatched and draw queued.
+    void set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the right padding in any harmonia unit
     double get_padding_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     /// @brief [EDITOR] Simple getter for the right padding in any harmonia unit
@@ -324,6 +324,14 @@ public:
     /// @return Width in the provided unit type
     double get_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
+    /// @brief Calculates the width with addition of other specific attributes, whether thats container specific or for example padding.
+    /// @param unit_type The unit type total width should be returned with.
+    double calculate_total_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    /// @brief [EDITOR] Calculates the width with addition of other specific attributes, whether thats container specific or for example padding for editor
+    /// @param unit_type The unit type total width should be returned with.
+    double editor_calculate_total_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
     /// @brief Sets the width to provided length and unit
     /// @param length Width length
     /// @param unit_type Width length unit type 
@@ -349,6 +357,14 @@ public:
     /// @param unit_type height unit type
     /// @return Height in the provided unit type
     double get_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    /// @brief Calculates the height with addition of other specific attributes, whether thats container specific or for example padding.
+    /// @param unit_type The unit type total height should be returned with.
+    double calculate_total_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    /// @brief [EDITOR] Calculates the height with addition of other specific attributes, whether thats container specific or for example padding for editor
+    /// @param unit_type The unit type total height should be returned with.
+    double editor_calculate_total_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Sets the height to provided length and unit
     /// @param length Height length
