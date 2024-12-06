@@ -77,7 +77,10 @@ public:
     void editor_update_presentation();
     /// @brief [EDITOR] Updates the container children positions in editor
     void editor_update_children_position(TypedArray<Node> children);
-    
+
+    void update_control_anchors(Control* control);
+    void editor_update_control_anchors(Control* control);
+
     /// @brief Alert manager of this containers. Bind to this manager if you want to react to this containers alerts
     AlertManager* alert_manager = memnew(AlertManager);
     /// @brief A simple getter for alert manager of this container

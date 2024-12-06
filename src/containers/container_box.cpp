@@ -39,10 +39,10 @@ void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input)
 
 void ContainerBox::draw_ui(){
     if(Engine::get_singleton()->is_editor_hint()){
-        Rect2 rect = Rect2(Vector2(-editor_get_padding_left(), -editor_get_padding_up()), Size2(editor_calculate_total_width(), editor_calculate_total_height()));
+        Rect2 rect = Rect2(Vector2(0, 0), Size2(editor_calculate_total_width(), editor_calculate_total_height()));
         draw_rect(rect, background_color);
     }else{
-        Rect2 rect = Rect2(Vector2(-get_padding_left(), -get_padding_up()), Size2(calculate_total_width(), calculate_total_height()));
+        Rect2 rect = Rect2(Vector2(0, 0), Size2(calculate_total_width(), calculate_total_height()));
         draw_rect(rect, background_color);
     }
 }
@@ -115,14 +115,14 @@ void ContainerBox::update_presentation(){
         parent = get_parent_container();
     }
     
-    Vector2 new_size = Vector2(get_width(), get_height());
+    Vector2 new_size = Vector2(calculate_total_width(), calculate_total_height());
 
     ContainerBox::set_size(new_size);
     update_children_position(get_children());
 }
 
 void ContainerBox::update_children_position(TypedArray<Node> children){
-    Vector2 position = Vector2(0, 0);
+    Vector2 position = Vector2(0, get_padding_up());
     // Add padding - Future update.
     
     for (size_t i = 0; i < children.size(); i++)
@@ -132,33 +132,45 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
             if(container->position_type == Position::STATIC){
                 position.y += container->get_margin_up();
                 position.y += container->get_padding_up();
-                container->set_position(Vector2(position.x + container->get_margin_left() + container->get_padding_left(),
+                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_padding_left(),
                                                 position.y));
                 position.y += container->get_height();
                 position.y += container->get_margin_down();
                 position.y += container->get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->get_pos_x()+container->get_padding_left()+container->get_margin_left(), 
-                                                container->get_pos_y()+container->get_padding_up()+container->get_margin_up()));                
+                container->set_position(Vector2(container->get_pos_x() + get_padding_left() + container->get_padding_left()+container->get_margin_left(), 
+                                                container->get_pos_y()+get_padding_up()+container->get_padding_up()+container->get_margin_up()));                
             }else if(container-> position_type == Position::RELATIVE){
                 position.y += container->get_margin_up();
                 position.y += container->get_padding_up();
-                container->set_position(Vector2(position.x + container->get_margin_left() + container->get_padding_left() + container->get_pos_x(),
+                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_padding_left() + container->get_pos_x(),
                                                 position.y + container->get_pos_y()));
                 position.y += container->get_height();
                 position.y += container->get_margin_down();
                 position.y += container->get_padding_down();
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
-            control->set_position(position);
-            position.y += control->get_size().y;
+            double side_left = control->get_anchor(Side::SIDE_LEFT);
+            double side_top = control->get_anchor(Side::SIDE_TOP);
+            double side_right = control->get_anchor(Side::SIDE_RIGHT);
+            double side_bottom = control->get_anchor(Side::SIDE_BOTTOM);
 
-            // Resets offsets to 0, this fixes the issue with anchors being badly set whenether they overflow.
-            // This also disables the use of offsets :/
-            control->set_offset(Side::SIDE_LEFT, 0);
-            control->set_offset(Side::SIDE_TOP, 0);
-            control->set_offset(Side::SIDE_RIGHT, 0);
-            control->set_offset(Side::SIDE_BOTTOM, 0);            
+            if(side_left == 0 && side_top == 0 && side_right == 0 && side_bottom == 0){
+                // Layout mode position
+                control->set_position(Vector2(position.x + get_padding_left(), position.y));
+            }else{
+                control->set_position(Vector2(position.x, position.y));
+                update_control_anchors(control);
+
+                // Resets offsets to 0, this fixes the issue with content overflowing outside of the content area.
+                // It disables the use of offsets, but might change in the future.
+                control->set_offset(Side::SIDE_LEFT, 0);
+                control->set_offset(Side::SIDE_TOP, 0);
+                control->set_offset(Side::SIDE_RIGHT, 0);
+                control->set_offset(Side::SIDE_BOTTOM, 0);
+            }
+
+            position.y += control->get_size().y;
         }
     }
 }
@@ -168,15 +180,15 @@ void ContainerBox::editor_update_presentation(){
         parent = get_parent_container();
     }
 
-    Vector2 new_size = Vector2(editor_get_width(), editor_get_height());
+    Vector2 new_size = Vector2(editor_calculate_total_width(), editor_calculate_total_height());
     ContainerBox::set_size(new_size);
     editor_update_children_position(get_children());
 }
 
 void ContainerBox::editor_update_children_position(TypedArray<Node> children)
 {
-    Vector2 position = Vector2(0, 0);
-
+    Vector2 position = Vector2(0, editor_get_padding_up());
+    
     // Add padding - Future update.
     for (size_t i = 0; i < children.size(); i++)
     {
@@ -185,18 +197,18 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
             if(container->position_type == Position::STATIC){
                 position.y += container->editor_get_margin_up();
                 position.y += container->editor_get_padding_up();
-                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left(), 
+                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left() + editor_get_padding_left(), 
                                                 position.y));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
                 position.y += container->editor_get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->editor_get_pos_x()+container->editor_get_padding_left()+container->editor_get_margin_left(), 
-                                                container->editor_get_pos_y()+container->editor_get_padding_up()+container->editor_get_margin_up()));
+                container->set_position(Vector2(container->editor_get_pos_x()+container->editor_get_padding_left()+container->editor_get_margin_left()+editor_get_padding_left(), 
+                                                container->editor_get_pos_y() + editor_get_padding_up() + container->editor_get_padding_up()+container->editor_get_margin_up()));
             }else if(container-> position_type == Position::RELATIVE){
                 position.y += container->editor_get_margin_up();
                 position.y += container->editor_get_padding_up();
-                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left() + container->editor_get_pos_x(), 
+                container->set_position(Vector2(position.x + editor_get_padding_left() + container->editor_get_margin_left() + container->editor_get_padding_left() + container->editor_get_pos_x(), 
                                         position.y + container->editor_get_pos_y()));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
@@ -204,9 +216,104 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
                 
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
-            control->set_position(position);
+            double side_left = control->get_anchor(Side::SIDE_LEFT);
+            double side_top = control->get_anchor(Side::SIDE_TOP);
+            double side_right = control->get_anchor(Side::SIDE_RIGHT);
+            double side_bottom = control->get_anchor(Side::SIDE_BOTTOM);
+
+            if(side_left == 0 && side_top == 0 && side_right == 0 && side_bottom == 0){
+                // Layout mode position
+                control->set_position(Vector2(position.x + editor_get_padding_left(), position.y));
+            }else{
+                control->set_position(Vector2(position.x, position.y));
+                editor_update_control_anchors(control);
+
+                // Resets offsets to 0, this fixes the issue with content overflowing outside of the content area.
+                // It disables the use of offsets, but might change in the future.
+                control->set_offset(Side::SIDE_LEFT, 0);
+                control->set_offset(Side::SIDE_TOP, 0);
+                control->set_offset(Side::SIDE_RIGHT, 0);
+                control->set_offset(Side::SIDE_BOTTOM, 0);
+            }
+
             position.y += control->get_size().y;
         }
+    }
+}
+
+void ContainerBox::update_control_anchors(Control* control){
+    double side_left = control->get_anchor(Side::SIDE_LEFT);
+    double side_top = control->get_anchor(Side::SIDE_TOP);
+    double side_right = control->get_anchor(Side::SIDE_RIGHT);
+    double side_bottom = control->get_anchor(Side::SIDE_BOTTOM);
+
+    if(side_left == 0 && side_top == 0 && side_right == 0 && side_bottom == 0){
+        return; // Layout mode is position
+    }
+
+    double left_min_size = get_padding_left()/calculate_total_width();
+    double right_max_size = 1-get_padding_right()/calculate_total_width(); // 1 calculates to 100%
+    double top_min_size = get_padding_up()/calculate_total_width();
+    double bottom_max_size = 1-get_padding_down()/calculate_total_width();
+
+    if(side_left < left_min_size){
+        control->set_anchor(Side::SIDE_LEFT, left_min_size);
+    }else if(side_left > right_max_size){
+        control->set_anchor(Side::SIDE_LEFT, right_max_size);
+    }
+
+    if(side_right < left_min_size){
+        control->set_anchor(Side::SIDE_RIGHT, left_min_size);
+    }else if(side_right > right_max_size){
+        control->set_anchor(Side::SIDE_RIGHT, right_max_size);
+    }
+
+    if(side_top < top_min_size){
+        control->set_anchor(Side::SIDE_TOP, top_min_size);
+    }else if(side_top > bottom_max_size){
+        control->set_anchor(Side::SIDE_TOP, bottom_max_size);
+    }   
+
+    if(side_bottom < top_min_size){
+        control->set_anchor(Side::SIDE_BOTTOM, top_min_size);
+    }else if(side_bottom > bottom_max_size){
+        control->set_anchor(Side::SIDE_BOTTOM, bottom_max_size);
+    }
+}
+
+void ContainerBox::editor_update_control_anchors(Control* control){
+    double side_left = control->get_anchor(Side::SIDE_LEFT);
+    double side_top = control->get_anchor(Side::SIDE_TOP);
+    double side_right = control->get_anchor(Side::SIDE_RIGHT);
+    double side_bottom = control->get_anchor(Side::SIDE_BOTTOM);
+
+    double left_min_size = editor_get_padding_left()/editor_calculate_total_width();
+    double right_max_size = 1-editor_get_padding_right()/editor_calculate_total_width(); // 1 calculates to 100%
+    double top_min_size = editor_get_padding_up()/editor_calculate_total_width();
+    double bottom_max_size = 1-editor_get_padding_down()/editor_calculate_total_width();
+
+    if(side_left < left_min_size){
+        control->set_anchor(Side::SIDE_LEFT, left_min_size);
+    }else if(side_left > right_max_size){
+        control->set_anchor(Side::SIDE_LEFT, right_max_size);
+    }
+
+    if(side_right < left_min_size){
+        control->set_anchor(Side::SIDE_RIGHT, left_min_size);
+    }else if(side_right > right_max_size){
+        control->set_anchor(Side::SIDE_RIGHT, right_max_size);
+    }
+
+    if(side_top < top_min_size){
+        control->set_anchor(Side::SIDE_TOP, top_min_size);
+    }else if(side_top > bottom_max_size){
+        control->set_anchor(Side::SIDE_TOP, bottom_max_size);
+    }   
+
+    if(side_bottom < top_min_size){
+        control->set_anchor(Side::SIDE_BOTTOM, top_min_size);
+    }else if(side_bottom > bottom_max_size){
+        control->set_anchor(Side::SIDE_BOTTOM, bottom_max_size);
     }
 }
 
