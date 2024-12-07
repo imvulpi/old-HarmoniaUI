@@ -131,19 +131,18 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
             if(container->position_type == Position::STATIC){
                 position.y += container->get_margin_up();
-                position.y += container->get_padding_up();
-                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_padding_left(),
+                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left(),
                                                 position.y));
                 position.y += container->get_height();
                 position.y += container->get_margin_down();
                 position.y += container->get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->get_pos_x() + get_padding_left() + container->get_padding_left()+container->get_margin_left(), 
-                                                container->get_pos_y()+get_padding_up()+container->get_padding_up()+container->get_margin_up()));                
+                container->set_position(Vector2(container->get_pos_x() + get_padding_left() + container->get_margin_left(), 
+                                                container->get_pos_y() + get_padding_up() + container->get_margin_up()));                
             }else if(container-> position_type == Position::RELATIVE){
                 position.y += container->get_margin_up();
                 position.y += container->get_padding_up();
-                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_padding_left() + container->get_pos_x(),
+                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_pos_x(),
                                                 position.y + container->get_pos_y()));
                 position.y += container->get_height();
                 position.y += container->get_margin_down();
@@ -196,19 +195,18 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
             if(container->position_type == Position::STATIC){
                 position.y += container->editor_get_margin_up();
-                position.y += container->editor_get_padding_up();
-                container->set_position(Vector2(position.x + container->editor_get_margin_left() + container->editor_get_padding_left() + editor_get_padding_left(), 
+                container->set_position(Vector2(position.x + container->editor_get_margin_left() + editor_get_padding_left(), 
                                                 position.y));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
                 position.y += container->editor_get_padding_down();
             }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->editor_get_pos_x()+container->editor_get_padding_left()+container->editor_get_margin_left()+editor_get_padding_left(), 
-                                                container->editor_get_pos_y() + editor_get_padding_up() + container->editor_get_padding_up()+container->editor_get_margin_up()));
+                container->set_position(Vector2(container->editor_get_pos_x() + container->editor_get_margin_left() + editor_get_padding_left(), 
+                                                container->editor_get_pos_y() + editor_get_padding_up() + container->editor_get_margin_up()));
             }else if(container-> position_type == Position::RELATIVE){
                 position.y += container->editor_get_margin_up();
                 position.y += container->editor_get_padding_up();
-                container->set_position(Vector2(position.x + editor_get_padding_left() + container->editor_get_margin_left() + container->editor_get_padding_left() + container->editor_get_pos_x(), 
+                container->set_position(Vector2(position.x + editor_get_padding_left() + container->editor_get_margin_left() + container->editor_get_pos_x(), 
                                         position.y + container->editor_get_pos_y()));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
