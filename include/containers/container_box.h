@@ -78,7 +78,12 @@ public:
     /// @brief [EDITOR] Updates the container children positions in editor
     void editor_update_children_position(TypedArray<Node> children);
 
+    /// @brief Updates a child control node anchors based on this container, for example enforces min/max values for anchors
+    /// @param control The child control taht anchors should be updated on.
     void update_control_anchors(Control* control);
+
+    /// @brief [EDITOR] Updates a child control node anchors based on this container, for example enforces min/max values for anchors specifically for the editor
+    /// @param control The child control taht anchors should be updated on.
     void editor_update_control_anchors(Control* control);
 
     /// @brief Alert manager of this containers. Bind to this manager if you want to react to this containers alerts
