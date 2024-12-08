@@ -657,6 +657,22 @@ ContainerBox::Position ContainerBox::get_position_type(){
     return position_type;
 }
 
+void ContainerBox::set_overflow_behaviour_x(OverflowBehaviour behaviour){
+    overflow_behaviour_x = behaviour;
+}
+
+ContainerBox::OverflowBehaviour ContainerBox::get_overflow_behaviour_x(){
+    return overflow_behaviour_x;
+}
+
+void ContainerBox::set_overflow_behaviour_y(OverflowBehaviour behaviour){
+    overflow_behaviour_y = behaviour;
+}
+
+ContainerBox::OverflowBehaviour ContainerBox::get_overflow_behaviour_y(){
+    return overflow_behaviour_y;
+}
+
 void ContainerBox::set_pos_x(double new_x, Harmonia::Unit unit_type){
     pos_x.length = new_x;
     pos_x.unit_type = unit_type;
@@ -801,6 +817,10 @@ void ContainerBox::_bind_methods(){
     BIND_ENUM_CONSTANT(Position::ABSOLUTE);
     BIND_ENUM_CONSTANT(Position::RELATIVE);
 
+    BIND_ENUM_CONSTANT(OverflowBehaviour::HIDDEN);
+    BIND_ENUM_CONSTANT(OverflowBehaviour::SCROLL);
+    BIND_ENUM_CONSTANT(OverflowBehaviour::VISIBLE);
+
     ClassDB::bind_method(D_METHOD("set_width", "length", "unit_type"), &ContainerBox::set_width);
     ClassDB::bind_method(D_METHOD("get_width", "unit_type"), &ContainerBox::get_width);
     ClassDB::bind_method(D_METHOD("set_height", "length", "unit_type"), &ContainerBox::set_height);
@@ -829,6 +849,11 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("get_pos_x", "unit_type"), &ContainerBox::get_pos_x);
     ClassDB::bind_method(D_METHOD("set_pos_y", "new_y", "unit_type"), &ContainerBox::set_pos_y);
     ClassDB::bind_method(D_METHOD("get_pos_y", "unit_type"), &ContainerBox::get_pos_y);
+
+    ClassDB::bind_method(D_METHOD("set_overflow_behaviour_x", "behaviour"), &ContainerBox::set_overflow_behaviour_x);
+    ClassDB::bind_method(D_METHOD("get_overflow_behaviour_x"), &ContainerBox::get_overflow_behaviour_x);
+    ClassDB::bind_method(D_METHOD("set_overflow_behaviour_y", "behaviour"), &ContainerBox::set_overflow_behaviour_y);
+    ClassDB::bind_method(D_METHOD("get_overflow_behaviour_y"), &ContainerBox::get_overflow_behaviour_y);
 
     ClassDB::bind_method(D_METHOD("set_margin_all", "all_sides", "unit_type", "dispatch_alert"), &ContainerBox::set_margin_all, DEFVAL(true));
     ClassDB::bind_method(D_METHOD("set_margin_y_vertical", "vertical_y", "vertical_unit", "dispatch_alert"), &ContainerBox::set_margin_y_vertical, DEFVAL(true));
@@ -868,10 +893,14 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("update_presentation"), &ContainerBox::update_presentation);
 
     const String positioning_types = "STATIC:0,ABSOLUTE:1,RELATIVE:2";
+    const String overflow_behaviours = "SCROLL:0,HIDDEN:1,VISIBLE:2";
+
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "alert_manager", PROPERTY_HINT_RESOURCE_TYPE, "alert_manager", PROPERTY_USAGE_NO_EDITOR), "set_alert_manager", "get_alert_manager");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_TYPE_STRING, "width_str", PROPERTY_USAGE_NO_EDITOR), "set_width_str", "get_width_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_TYPE_STRING, "height_str", PROPERTY_USAGE_NO_EDITOR), "set_height_str", "get_height_str");
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug_outputs", PROPERTY_HINT_TYPE_STRING, "debug_outputs", PROPERTY_USAGE_NO_EDITOR), "set_debug_outputs", "get_debug_outputs");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour_x", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour_x", "get_overflow_behaviour_x");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour_Y", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour_y", "get_overflow_behaviour_y");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "positioning", PROPERTY_HINT_ENUM, positioning_types, PROPERTY_USAGE_DEFAULT), "set_position_type", "get_position_type");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_x_str", PROPERTY_HINT_TYPE_STRING, "pos_x_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_x_str", "get_pos_x_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_y_str", PROPERTY_HINT_TYPE_STRING, "pos_y_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_y_str", "get_pos_y_str");
@@ -898,8 +927,7 @@ bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)
     }else if(name == "background_color"){
         set_background_color(p_value);
         return true;
-    }
-    else if(name == "debug_outputs"){
+    }else if(name == "debug_outputs"){
         set_debug_outputs(p_value);
     	return true;
     }else if(name == "pos_x_str"){

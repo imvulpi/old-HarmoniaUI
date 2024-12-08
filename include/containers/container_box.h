@@ -29,6 +29,12 @@ public:
         RELATIVE, // Positioned from the original location
     };
 
+    enum OverflowBehaviour {
+        SCROLL,
+        HIDDEN,
+        VISIBLE,
+    };
+
     /// @brief Update time from the last update
     /// @note This will get removed in the future.
     double update_time {0};
@@ -263,6 +269,21 @@ public:
     /// @brief Returns the positioning type for this containers children
     Position get_position_type();
     
+    OverflowBehaviour overflow_behaviour_x {SCROLL};
+    OverflowBehaviour overflow_behaviour_y {SCROLL};
+
+    /// @brief Setter for an overflowing behaviour of x axis
+    void set_overflow_behaviour_x(OverflowBehaviour behaviour);
+
+    /// @brief Getter for an overflowing behaviour of x axis
+    OverflowBehaviour get_overflow_behaviour_x();
+
+    /// @brief Setter for an overflowing behaviour of y axis
+    void set_overflow_behaviour_y(OverflowBehaviour behaviour);
+
+    /// @brief Getter for an overflowing behaviour of y axis
+    OverflowBehaviour get_overflow_behaviour_y();
+
     /// NOTE: BELOW Str pos are positions set in the editor or in the code using getter/setter
     /// The string positions get processed to create a pos_x length pair. Ex of str pos: 10%, 10px
 
@@ -402,3 +423,4 @@ protected:
 };
 
 VARIANT_ENUM_CAST(ContainerBox::Position);
+VARIANT_ENUM_CAST(ContainerBox::OverflowBehaviour);
