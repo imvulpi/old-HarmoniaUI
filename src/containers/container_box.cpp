@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/window.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
+#include <godot_cpp/classes/rendering_server.hpp>
 #include "core/systems/alert/layout/alert_layout_change.h"
 #include "commons/string_helper.h"
 
@@ -28,13 +29,89 @@ void ContainerBox::_process(double time) {
 /// TODO: Handling of scrolling inside this function
 void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input)
 {
-    if(auto* mouse_event = Object::cast_to<InputEventMouseButton>(*p_gui_input)){
-        if(mouse_event->is_pressed()){
-            if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_UP){
-                
+    if(is_overflowed_y && overflow_behaviour_y == SCROLL){
+        if(auto* mouse_event = Object::cast_to<InputEventMouseButton>(*p_gui_input)){
+            if(mouse_event->is_pressed()){
+                if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_UP){
+                    
+                }else if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_DOWN){
+
+                }
             }
         }
     }
+}
+
+void ContainerBox::check_overflow(){
+    TypedArray<Node> children = get_children();
+    Vector2 children_size = Vector2(0, 0);
+    bool current_check_y_overflowed {false};
+    bool current_check_x_overflowed {false};
+
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        auto current_child = children[i];
+        if(auto* container = Object::cast_to<ContainerBox>(current_child)){
+            if(container->position_type == STATIC || container->position_type == RELATIVE){
+                children_size.x += container->calculate_total_width() + container->get_margin_left()+container->get_margin_right();
+                children_size.y += container->calculate_total_height() + container->get_margin_up()+container->get_margin_down();
+            }
+
+            if(container->position_type == ABSOLUTE){
+                if(container->calculate_total_width() + container->get_pos_x() > get_width()) current_check_x_overflowed = true;
+                if(container->calculate_total_height() + container->get_pos_y() > get_height()) current_check_y_overflowed = true;
+            }else if(container->position_type == RELATIVE){
+                if(children_size.x + container->get_pos_x() > get_width()) current_check_x_overflowed = true;
+                if(children_size.y + container->get_pos_y() > get_height()) current_check_y_overflowed = true;                
+            }
+        }else if(auto* control = Object::cast_to<Control>(current_child)){
+            children_size += control->get_size();
+        }
+    }
+
+    if(children_size.x > get_width()) is_overflowed_x = true;
+    else if(current_check_x_overflowed != true) is_overflowed_x = false;
+
+    if(children_size.y > get_height()) is_overflowed_y = true;
+    else if(current_check_y_overflowed != true) is_overflowed_y = false;
+    
+    if(debug_outputs) UtilityFunctions::print("Overflow status: (x: ", is_overflowed_x, "), (y: ", is_overflowed_y, ")");
+}
+
+void ContainerBox::editor_check_overflow(){
+    TypedArray<Node> children = get_children();
+    Vector2 children_size = Vector2(0, 0);
+    bool current_check_y_overflowed {false};
+    bool current_check_x_overflowed {false};
+
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        auto current_child = children[i];
+        if(auto* container = Object::cast_to<ContainerBox>(current_child)){
+            if(container->position_type == STATIC || container->position_type == RELATIVE){
+                children_size.x += container->editor_calculate_total_width() + container->editor_get_margin_left()+container->editor_get_margin_right();
+                children_size.y += container->editor_calculate_total_height() + container->editor_get_margin_up()+container->editor_get_margin_down();
+            }
+
+            if(container->position_type == ABSOLUTE){
+                if(container->editor_calculate_total_width() + container->editor_get_pos_x() > editor_get_width()) current_check_x_overflowed = true;
+                if(container->editor_calculate_total_height() + container->editor_get_pos_y() > editor_get_height()) current_check_y_overflowed = true;
+            }else if(container->position_type == RELATIVE){
+                if(children_size.x + container->editor_get_pos_x() > editor_get_width()) current_check_x_overflowed = true;
+                if(children_size.y + container->editor_get_pos_y() > editor_get_height()) current_check_y_overflowed = true;                
+            }
+        }else if(auto* control = Object::cast_to<Control>(current_child)){
+            children_size += control->get_size();
+        }
+    }
+
+    if(children_size.x > editor_get_width()) is_overflowed_x = true;
+    else if(current_check_x_overflowed != true) is_overflowed_x = false;
+
+    if(children_size.y > editor_get_height()) is_overflowed_y = true;
+    else if(current_check_y_overflowed != true) is_overflowed_y = false;
+    
+    if(debug_outputs) UtilityFunctions::print("[EDITOR] Overflow status: (x: ", is_overflowed_x, "), (y: ", is_overflowed_y, ")");
 }
 
 void ContainerBox::draw_ui(){
@@ -118,6 +195,7 @@ void ContainerBox::update_presentation(){
     Vector2 new_size = Vector2(calculate_total_width(), calculate_total_height());
 
     ContainerBox::set_size(new_size);
+    check_overflow();
     update_children_position(get_children());
 }
 
@@ -181,6 +259,7 @@ void ContainerBox::editor_update_presentation(){
 
     Vector2 new_size = Vector2(editor_calculate_total_width(), editor_calculate_total_height());
     ContainerBox::set_size(new_size);
+    ContainerBox::editor_check_overflow();
     editor_update_children_position(get_children());
 }
 

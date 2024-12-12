@@ -47,6 +47,15 @@ public:
     void ContainerBox::_process(double delta);
     void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input);
 
+    /// @brief Checks and applies overflowing behaviour if overflowing is detected 
+    void check_overflow();
+    
+    /// @brief [EDITOR] Checks and applies overflowing behaviour if overflowing is detected
+    void editor_check_overflow();
+
+    bool is_overflowed_x { false };
+    bool is_overflowed_y { false };
+
     /// @brief Functions as _draw but doesnt override the _draw instead it's used when draw notification is emmited.  
     void draw_ui();
 
