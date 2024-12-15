@@ -5,9 +5,12 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
+#include <godot_cpp/classes/v_scroll_bar.hpp>
+#include <godot_cpp/classes/h_scroll_bar.hpp>
 #include "commons/container_unit_converter.h"
 #include "core/systems/alert/alert_manager.h"
 #include "core/harmonia.h"
+#include "containers/content_box.h"
 
 using namespace godot;
 
@@ -22,13 +25,6 @@ public:
     /// @brief Alert of layout change, that being position, width, height or other layout change
     const String ALERT_LAYOUT_CHANGE = "layout-change";
 
-    /// @brief Enum used for positioning of containers.
-    enum Position { 
-        STATIC,   // Normal
-        ABSOLUTE, // Positioned to parent
-        RELATIVE, // Positioned from the original location
-    };
-
     /// @brief Update time from the last update
     /// @note This will get removed in the future.
     double update_time {0};
@@ -37,9 +33,144 @@ public:
     /// @note This will get removed in the future.
     double update_interval {1.0};
 
+    void ContainerBox::_enter_tree();
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
-    void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input);
+
+    /// @brief Content box of this container if it's using one.
+    ContentBox* content_box {nullptr};
+    /// @brief Attempts to find a content box inside a container.
+    /// @return A content box associated with the container.
+    ContentBox* find_content_box();
+    /// @brief Creates a content box, sets few stuff in the contentbox
+    void create_content_box();
+
+    /// @brief Calculates overflow from provided same axis container size, check size and current overflow
+    /// @param container Size of the container
+    /// @param check_size Size of the checking size
+    /// @param current_overflow The current overflow
+    /// @return Overflow or current overflow if calculated is not bigger
+    double calculate_overflow(double container, double check_size, double current_overflow);
+
+    /// @brief Helper function for getting overflow width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair the overflow width
+    /// @param unit_type wanted unit
+    /// @return overflow width in wanted unit
+    double get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief Helper function for getting overflow height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair the overflow height
+    /// @param unit_type wanted unit 
+    /// @return overflow height in wanted unit
+    double get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief [EDITOR] Helper function for getting overflow width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair the overflow width
+    /// @param unit_type wanted unit
+    /// @return overflow width in wanted unit
+
+    double editor_get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    /// @brief [EDITOR] Helper function for getting overflow height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
+    /// @param pair the overflow height
+    /// @param unit_type wanted unit 
+    /// @return overflow height in wanted unit
+    double editor_get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+
+    /// @brief Is X axis overflowed
+    bool is_overflowed_x { false };
+    /// @brief Size of the X overflowing
+    LengthPair overflow_x_size;
+    /// @brief Sets size of X overflowing
+    /// @param value size of overflowing
+    /// @param unit_type unit of the size
+    void set_overflow_x_size(double value, Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief Gets size of X overflowing
+    /// @param unit_type unit which it should be returned in
+    double get_overflow_x_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief [EDITOR] Gets size of X overflowing
+    /// @param unit_type unit which it should be returned in
+    double editor_get_overflow_x_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
+
+    /// @brief is Y axis overflowed
+    bool is_overflowed_y { false };
+    /// @brief Size of the Y overflowing
+    LengthPair overflow_y_size;
+    /// @brief Sets size of Y overflowing
+    /// @param value size of overflowing
+    /// @param unit_type unit of the size
+    void set_overflow_y_size(double value, Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief Gets a size of Y size overflowing
+    /// @param unit_type unit which you want overflow y size to be returned in
+    double get_overflow_y_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief [EDITOR] Gets a size of Y size overflowing
+    /// @param unit_type unit which you want overflow y size to be returned in 
+    double editor_get_overflow_y_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
+
+    /// @brief Updates positions of vertical and horizontal scrollbars, for now: vertical on left, horizontal down
+    void position_scrolls();
+    /// @brief [EDITOR] Updates positions of vertical and horizontal scrollbars, for now: vertical on left, horizontal down
+    void editor_position_scrolls();
+
+    /// @brief Vertical scroll which will be used when overflowing occurs
+    VScrollBar* vertical_scroll {nullptr};
+    /// @brief Path to vertical scroll, editor way of setting vertical scroll.
+    NodePath vertical_scroll_path {""};
+    /// @brief Simple setter for vertical scroll in editor
+    /// @param scroll the path to vertical scroll.
+    void set_vertical_scroll(NodePath scroll);
+    /// @brief Simple getter for vertical scroll in editor
+    NodePath get_vertical_scroll();
+
+    /// @brief Horizontal scroll which will be used when overflowing occurs
+    HScrollBar* horizontal_scroll {nullptr};
+    /// @brief Path to horizontal scroll, editor way of setting horizontal scroll.
+    NodePath horizontal_scroll_path {""};
+    /// @brief Simple setter for horizontal scroll in editor
+    /// @param scroll the path to horizontal scroll.
+    void set_horizontal_scroll(NodePath scroll);
+    /// @brief Simple getter for horizontal scroll in editor
+    NodePath get_horizontal_scroll();
+
+    /// @brief Value in which scroll down or up will change when scrolling is detected
+    LengthPair scroll_y_step;
+    /// @brief A way of setting step in the editor, step y
+    String string_scroll_y_step;
+    /// @brief Simple string setter for step y
+    /// @param value step y
+    void set_string_scroll_y_step(String value);
+    /// @brief Simple string getter for step y
+    String get_string_scroll_y_step();
+    /// @brief Simple setter for step y
+    /// @param value step y
+    /// @param unit_type unit of value 
+    void set_scroll_y_step(double value, Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief Simple getter for step y
+    /// @param value step y
+    /// @param unit_type unit of value 
+    double get_scroll_y_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief [EDITOR] Simple getter for step y
+    /// @param value step y
+    /// @param unit_type unit of value
+    double editor_get_scroll_y_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
+   
+    /// @brief Value in which scroll left or right will change when scrolling is detected
+    LengthPair scroll_x_step;
+    /// @brief A way of setting step in the editor, Value in which scroll left or right will change when scrolling is detected
+    String string_scroll_x_step;
+    /// @brief Simple string setter for step x
+    /// @param value step x
+    void set_string_scroll_x_step(String value);
+    /// @brief Simple string getter for step x
+    String get_string_scroll_x_step();
+    /// @brief Simple setter for step x
+    /// @param value step x
+    void set_scroll_x_step(double value, Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief Simple getter for step x
+    /// @param value step x
+    double get_scroll_x_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
+    /// @brief [EDITOR] Simple getter for step x
+    /// @param value step x
+    double editor_get_scroll_x_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
     /// @brief Functions as _draw but doesnt override the _draw instead it's used when draw notification is emmited.  
     void draw_ui();
@@ -256,13 +387,21 @@ public:
     void set_background_color(Color color);
 
     /// @brief The type of positioning of this containers children. Default STATIC.
-    Position position_type {Position::STATIC};
+    Harmonia::Position position_type {Harmonia::Position::STATIC};
 
     /// @brief Sets a positioning type for this containers children.
-    void set_position_type(Position new_type);
+    void set_position_type(Harmonia::Position new_type);
     /// @brief Returns the positioning type for this containers children
-    Position get_position_type();
+    Harmonia::Position get_position_type();
     
+    Harmonia::OverflowBehaviour overflow_behaviour {Harmonia::SCROLL};
+
+    /// @brief Setter for an overflowing behaviour of xy axes
+    void set_overflow_behaviour(Harmonia::OverflowBehaviour behaviour);
+
+    /// @brief Getter for an overflowing behaviour of xy axes
+    Harmonia::OverflowBehaviour get_overflow_behaviour();
+
     /// NOTE: BELOW Str pos are positions set in the editor or in the code using getter/setter
     /// The string positions get processed to create a pos_x length pair. Ex of str pos: 10%, 10px
 
@@ -400,5 +539,3 @@ protected:
     void _get_property_list(List<PropertyInfo> *p_list) const;
     void _notification(int p_what);
 };
-
-VARIANT_ENUM_CAST(ContainerBox::Position);

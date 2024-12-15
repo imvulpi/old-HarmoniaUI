@@ -75,7 +75,17 @@ Harmonia::Unit LengthPair::get_unit(String unit_string){
     }
 }
 
+//const String Harmonia::ALERT_LAYOUT_CHANGE = "layout-change";
+
 void Harmonia::_bind_methods(){
+    BIND_ENUM_CONSTANT(SCROLL);
+    BIND_ENUM_CONSTANT(HIDDEN);
+    BIND_ENUM_CONSTANT(VISIBLE);
+
+    BIND_ENUM_CONSTANT(STATIC);
+    BIND_ENUM_CONSTANT(ABSOLUTE);
+    BIND_ENUM_CONSTANT(RELATIVE);
+
     BIND_ENUM_CONSTANT(NOT_SET);
     BIND_ENUM_CONSTANT(PIXEL);
     BIND_ENUM_CONSTANT(PERCENTAGE);
