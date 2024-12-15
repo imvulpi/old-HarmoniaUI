@@ -4,6 +4,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "containers/container_box.h"
+#include "containers/content_box.h"
 #include "commons/unit_converter.h"
 #include "core/systems/alert/alert.h"
 #include "core/systems/alert/layout/alert_layout_change.h"
@@ -20,6 +21,7 @@ void initialize_harmonia(ModuleInitializationLevel p_level) {
 	GDREGISTER_VIRTUAL_CLASS(Alert);
 	GDREGISTER_CLASS(AlertLayoutChange);
 	GDREGISTER_CLASS(AlertManager);
+	GDREGISTER_CLASS(ContentBox);
 	GDREGISTER_CLASS(ContainerBox);
 }
 

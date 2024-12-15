@@ -15,6 +15,20 @@ public:
     Harmonia() = default;
     ~Harmonia() = default;
 
+    /// @brief Enum used for defining overflowing behaviour
+    enum OverflowBehaviour {
+        SCROLL, // Will add scrolls and hide overflowing content
+        HIDDEN, // Will hide overflowing content
+        VISIBLE, // Overflowing content will be visible.
+    };
+
+    /// @brief Enum used for positioning of containers.
+    enum Position { 
+        STATIC,   // Normal
+        ABSOLUTE, // Positioned to parent
+        RELATIVE, // Positioned from the original location
+    };
+
     /// @brief Enum of units that are supported by specific length and other values.
     enum Unit {
         /// @brief Represents an unset unit.
@@ -29,6 +43,7 @@ public:
         VIEWPORT_HEIGHT,
     };
 
+    //const static String ALERT_LAYOUT_CHANGE; // "layout-change"
 protected:
     static void _bind_methods();
 };
@@ -67,4 +82,6 @@ struct LengthPair{
     static String get_pair_str(LengthPair pair);
 };
 
+VARIANT_ENUM_CAST(Harmonia::OverflowBehaviour)
+VARIANT_ENUM_CAST(Harmonia::Position)
 VARIANT_ENUM_CAST(Harmonia::Unit)
