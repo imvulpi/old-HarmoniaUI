@@ -9,8 +9,46 @@
 #include "core/systems/alert/layout/alert_layout_change.h"
 #include "commons/string_helper.h"
 
+void ContainerBox::_enter_tree(){
+    if (Engine::get_singleton()->is_editor_hint()) {
+        ContentBox* found_content_box = find_content_box();
+        if(found_content_box == nullptr){
+            create_content_box();
+        }else{
+            content_box = found_content_box;
+        }
+    }
+}
+
 void ContainerBox::_ready(){
     set_process(true);
+    set_string_scroll_y_step("10px");
+    set_string_scroll_x_step("10px");
+    if(content_box){
+        content_box->overflowing_behaviour = overflow_behaviour;
+    }else{
+        ContentBox* found_content_box = find_content_box();
+        if(found_content_box == nullptr){
+        }else{
+            content_box = found_content_box;
+        }
+    }
+
+    Node* vnode = get_node_or_null(vertical_scroll_path);
+    if(auto* vscroll = Object::cast_to<VScrollBar>(vnode)){
+        vertical_scroll = vscroll;
+        if(content_box){
+            content_box->scrollbar_y = vscroll;
+        }
+    }
+
+    Node* hnode = get_node_or_null(horizontal_scroll_path);
+    if(auto* hscroll = Object::cast_to<HScrollBar>(hnode)){
+        horizontal_scroll = hscroll;
+        if(content_box){
+            content_box->scrollbar_x = hscroll;
+        }
+    }
 }
 
 void ContainerBox::_process(double time) {
@@ -26,92 +64,234 @@ void ContainerBox::_process(double time) {
     }
 }
 
-/// TODO: Handling of scrolling inside this function
-void ContainerBox::_gui_input(const Ref<InputEvent> &p_gui_input)
-{
-    if(is_overflowed_y && overflow_behaviour_y == SCROLL){
-        if(auto* mouse_event = Object::cast_to<InputEventMouseButton>(*p_gui_input)){
-            if(mouse_event->is_pressed()){
-                if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_UP){
-                    
-                }else if(mouse_event->get_button_index() == MouseButton::MOUSE_BUTTON_WHEEL_DOWN){
+ContentBox* ContainerBox::find_content_box(){
+    TypedArray<Node> nodes = get_children();
 
-                }
-            }
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        if(auto* content_box = Object::cast_to<ContentBox>(nodes[i])){
+            return content_box;
+        }
+    }
+    
+    return nullptr;
+}
+
+void ContainerBox::create_content_box(){
+    ContentBox* new_content_box = memnew(ContentBox());
+    content_box = new_content_box;
+    new_content_box->set_name("Content");
+    add_child(new_content_box);
+    new_content_box->set_owner(get_tree()->get_edited_scene_root());
+}
+
+double ContainerBox::calculate_overflow(double container, double check_size, double current_overflow){
+    if(check_size > container){
+        double overflow = check_size - container;
+        if(overflow > current_overflow){
+            return overflow;
+        }
+    }
+
+    return current_overflow;
+}
+
+double ContainerBox::get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
+    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
+
+    Size2 window_size = get_tree()->get_root()->get_visible_rect().size;
+
+    if(parent == nullptr){
+        return ContainerUnitConverter::get_width(pair, window_size.x, window_size, unit_type);
+    }
+
+    return ContainerUnitConverter::get_width(pair, parent->get_width(), window_size, unit_type);
+}
+
+double ContainerBox::get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
+    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
+
+    Size2 window_size = get_tree()->get_root()->get_visible_rect().size;
+
+    if(parent == nullptr){
+        return ContainerUnitConverter::get_height(pair, window_size.y, window_size, unit_type);
+    }
+
+    return ContainerUnitConverter::get_height(pair, parent->get_height(), window_size, unit_type);
+}
+
+double ContainerBox::editor_get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
+    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
+
+    Size2 window_size = Size2(
+        ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_width"), 
+        ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_height"));
+
+    if(parent == nullptr){
+        return ContainerUnitConverter::get_width(pair, window_size.x, window_size, unit_type);
+    }
+
+    return ContainerUnitConverter::get_width(pair, parent->get_width(), window_size, unit_type);
+}
+
+double ContainerBox::editor_get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
+    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
+
+    Size2 window_size = Size2(
+        ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_width"), 
+        ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_height"));
+
+    if(parent == nullptr){
+        return ContainerUnitConverter::get_height(pair, window_size.y, window_size, unit_type);
+    }
+
+    return ContainerUnitConverter::get_height(pair, parent->get_height(), window_size, unit_type);
+}
+
+void ContainerBox::set_overflow_x_size(double value, Harmonia::Unit unit_type){
+    overflow_x_size.length = value;
+    overflow_x_size.unit_type = unit_type;
+}
+
+double ContainerBox::get_overflow_x_size(Harmonia::Unit unit_type){
+    return get_overflow_width_length_pair_unit(overflow_x_size, unit_type);
+}
+
+double ContainerBox::editor_get_overflow_x_size(Harmonia::Unit unit_type){
+    return editor_get_overflow_width_length_pair_unit(overflow_x_size, unit_type);
+}
+
+void ContainerBox::set_overflow_y_size(double value, Harmonia::Unit unit_type){
+    overflow_y_size.length = value;
+    overflow_y_size.unit_type = unit_type;
+}
+
+double ContainerBox::get_overflow_y_size(Harmonia::Unit unit_type){
+    return get_overflow_height_length_pair_unit(overflow_y_size, unit_type);
+}
+
+double ContainerBox::editor_get_overflow_y_size(Harmonia::Unit unit_type){
+    return editor_get_overflow_height_length_pair_unit(overflow_y_size, unit_type);
+}
+
+void ContainerBox::position_scrolls(){
+    Vector2 vscroll_size = Vector2(0,0);
+    if(vertical_scroll){
+        vscroll_size = vertical_scroll->get_size();
+        vertical_scroll->set_size(Vector2(vscroll_size.x, get_height()));
+        vertical_scroll->set_position(Vector2(get_width()-vscroll_size.x, 0));
+    } 
+
+    if(horizontal_scroll){
+        Vector2 hscroll_size = horizontal_scroll->get_size();
+        if(vertical_scroll && vertical_scroll->is_visible()){
+            horizontal_scroll->set_size(Vector2(get_width()-vscroll_size.x, hscroll_size.y));
+        }else{
+            horizontal_scroll->set_size(Vector2(get_width(), hscroll_size.y));
+        }
+        horizontal_scroll->set_position(Vector2(0, get_height()-hscroll_size.y));
+    }
+}
+
+void ContainerBox::editor_position_scrolls(){
+    Vector2 vscroll_size = Vector2(0,0);
+    if(vertical_scroll){
+        vscroll_size = vertical_scroll->get_size();
+        vertical_scroll->set_size(Vector2(vscroll_size.x, editor_get_height()));
+        vertical_scroll->set_position(Vector2(editor_get_width()-vscroll_size.x, 0));
+    }
+
+    if(horizontal_scroll){
+        Vector2 hscroll_size = horizontal_scroll->get_size();
+        if(vertical_scroll && vertical_scroll->is_visible()){
+            horizontal_scroll->set_size(Vector2(editor_get_width()-vscroll_size.x, hscroll_size.y));
+        }else{
+            horizontal_scroll->set_size(Vector2(editor_get_width(), hscroll_size.y));
+        }       
+        horizontal_scroll->set_position(Vector2(0, editor_get_height()-hscroll_size.y));
+    }    
+}
+
+void ContainerBox::set_vertical_scroll(NodePath scroll){
+    vertical_scroll_path = scroll;
+    Node* node = get_node_or_null(scroll);
+    if(auto* vscroll = Object::cast_to<VScrollBar>(node)){
+        vertical_scroll = vscroll;
+        if(content_box){
+            content_box->scrollbar_y = vscroll;
         }
     }
 }
 
-void ContainerBox::check_overflow(){
-    TypedArray<Node> children = get_children();
-    Vector2 children_size = Vector2(0, 0);
-    bool current_check_y_overflowed {false};
-    bool current_check_x_overflowed {false};
-
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        auto current_child = children[i];
-        if(auto* container = Object::cast_to<ContainerBox>(current_child)){
-            if(container->position_type == STATIC || container->position_type == RELATIVE){
-                children_size.x += container->calculate_total_width() + container->get_margin_left()+container->get_margin_right();
-                children_size.y += container->calculate_total_height() + container->get_margin_up()+container->get_margin_down();
-            }
-
-            if(container->position_type == ABSOLUTE){
-                if(container->calculate_total_width() + container->get_pos_x() > get_width()) current_check_x_overflowed = true;
-                if(container->calculate_total_height() + container->get_pos_y() > get_height()) current_check_y_overflowed = true;
-            }else if(container->position_type == RELATIVE){
-                if(children_size.x + container->get_pos_x() > get_width()) current_check_x_overflowed = true;
-                if(children_size.y + container->get_pos_y() > get_height()) current_check_y_overflowed = true;                
-            }
-        }else if(auto* control = Object::cast_to<Control>(current_child)){
-            children_size += control->get_size();
-        }
-    }
-
-    if(children_size.x > get_width()) is_overflowed_x = true;
-    else if(current_check_x_overflowed != true) is_overflowed_x = false;
-
-    if(children_size.y > get_height()) is_overflowed_y = true;
-    else if(current_check_y_overflowed != true) is_overflowed_y = false;
-    
-    if(debug_outputs) UtilityFunctions::print("Overflow status: (x: ", is_overflowed_x, "), (y: ", is_overflowed_y, ")");
+NodePath ContainerBox::get_vertical_scroll(){
+    return vertical_scroll_path;
 }
 
-void ContainerBox::editor_check_overflow(){
-    TypedArray<Node> children = get_children();
-    Vector2 children_size = Vector2(0, 0);
-    bool current_check_y_overflowed {false};
-    bool current_check_x_overflowed {false};
-
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        auto current_child = children[i];
-        if(auto* container = Object::cast_to<ContainerBox>(current_child)){
-            if(container->position_type == STATIC || container->position_type == RELATIVE){
-                children_size.x += container->editor_calculate_total_width() + container->editor_get_margin_left()+container->editor_get_margin_right();
-                children_size.y += container->editor_calculate_total_height() + container->editor_get_margin_up()+container->editor_get_margin_down();
-            }
-
-            if(container->position_type == ABSOLUTE){
-                if(container->editor_calculate_total_width() + container->editor_get_pos_x() > editor_get_width()) current_check_x_overflowed = true;
-                if(container->editor_calculate_total_height() + container->editor_get_pos_y() > editor_get_height()) current_check_y_overflowed = true;
-            }else if(container->position_type == RELATIVE){
-                if(children_size.x + container->editor_get_pos_x() > editor_get_width()) current_check_x_overflowed = true;
-                if(children_size.y + container->editor_get_pos_y() > editor_get_height()) current_check_y_overflowed = true;                
-            }
-        }else if(auto* control = Object::cast_to<Control>(current_child)){
-            children_size += control->get_size();
+void ContainerBox::set_horizontal_scroll(NodePath scroll){
+    horizontal_scroll_path = scroll;
+    Node* node = get_node_or_null(scroll);
+    if(auto* hscroll = Object::cast_to<HScrollBar>(node)){
+        horizontal_scroll = hscroll;
+        if(content_box){
+            content_box->scrollbar_x = hscroll;
         }
     }
+}
 
-    if(children_size.x > editor_get_width()) is_overflowed_x = true;
-    else if(current_check_x_overflowed != true) is_overflowed_x = false;
+NodePath ContainerBox::get_horizontal_scroll(){
+    return horizontal_scroll_path;
+}
 
-    if(children_size.y > editor_get_height()) is_overflowed_y = true;
-    else if(current_check_y_overflowed != true) is_overflowed_y = false;
-    
-    if(debug_outputs) UtilityFunctions::print("[EDITOR] Overflow status: (x: ", is_overflowed_x, "), (y: ", is_overflowed_y, ")");
+void ContainerBox::set_string_scroll_y_step(String value){
+    string_scroll_y_step = value;
+    LengthPair new_scroll_y_step = LengthPair::get_pair(value);
+    set_scroll_y_step(new_scroll_y_step.length, new_scroll_y_step.unit_type);
+}
+
+String ContainerBox::get_string_scroll_y_step(){
+    return string_scroll_y_step;
+}
+
+void ContainerBox::set_scroll_y_step(double value, Harmonia::Unit unit_type){
+    scroll_y_step.length = value;
+    scroll_y_step.unit_type = unit_type;
+    if(content_box){
+        content_box->scroll_step_top_px = get_scroll_y_step();
+    }
+}
+
+double ContainerBox::get_scroll_y_step(Harmonia::Unit unit_type){
+    return get_overflow_height_length_pair_unit(scroll_y_step, unit_type);
+}
+
+double ContainerBox::editor_get_scroll_y_step(Harmonia::Unit unit_type){
+    return editor_get_overflow_width_length_pair_unit(scroll_y_step, unit_type);
+}
+
+void ContainerBox::set_string_scroll_x_step(String value){
+    string_scroll_x_step = value;
+    LengthPair new_scroll_x_step = LengthPair::get_pair(value);
+    set_scroll_x_step(new_scroll_x_step.length, new_scroll_x_step.unit_type);
+    if(content_box){
+        content_box->scroll_step_left_px = get_scroll_x_step();
+    }
+}
+
+String ContainerBox::get_string_scroll_x_step(){
+    return string_scroll_x_step;
+}
+
+void ContainerBox::set_scroll_x_step(double value, Harmonia::Unit unit_type){
+    scroll_x_step.length = value;
+    scroll_x_step.unit_type = unit_type;
+}
+
+double ContainerBox::get_scroll_x_step(Harmonia::Unit unit_type){
+    return get_overflow_width_length_pair_unit(scroll_x_step, unit_type);
+}
+
+double ContainerBox::editor_get_scroll_x_step(Harmonia::Unit unit_type){
+    return editor_get_overflow_width_length_pair_unit(scroll_x_step, unit_type);
 }
 
 void ContainerBox::draw_ui(){
@@ -193,38 +373,89 @@ void ContainerBox::update_presentation(){
     }
     
     Vector2 new_size = Vector2(calculate_total_width(), calculate_total_height());
-
     ContainerBox::set_size(new_size);
-    check_overflow();
-    update_children_position(get_children());
+    if(content_box){
+        update_children_position(content_box->get_children());
+        content_box->set_size(Vector2(get_width(), get_height())); // Set to 100%, 100% no padding.
+        content_box->apply_overflowing();
+        content_box->standalone = false;
+        if(is_overflowed_x || is_overflowed_y){
+            content_box->is_overflowed_x = is_overflowed_x;
+            content_box->is_overflowed_y = is_overflowed_y;
+            content_box->overflowing_size_x_px = get_overflow_x_size();
+            content_box->overflowing_size_y_px = get_overflow_y_size();
+            content_box->max_scroll_left_px = content_box->overflowing_size_x_px;
+            content_box->max_scroll_top_px = content_box->overflowing_size_y_px;
+        }else{
+            content_box->is_overflowed_x = is_overflowed_x;
+            content_box->is_overflowed_y = is_overflowed_y;
+            content_box->overflowing_size_x_px = 0;
+            content_box->overflowing_size_y_px = 0;
+            content_box->max_scroll_left_px = 0;
+            content_box->max_scroll_top_px = 0;
+        }
+    }else{
+        update_children_position(get_children());
+    }
+
+    if(is_overflowed_x && horizontal_scroll){
+        horizontal_scroll->set_visible(true);
+    } else if(horizontal_scroll && !is_overflowed_x){
+        horizontal_scroll->set_visible(false);
+    }
+    
+    if(is_overflowed_y && vertical_scroll){
+        vertical_scroll->set_visible(true);
+    }else if(vertical_scroll && !is_overflowed_y){
+        vertical_scroll->set_visible(false);
+    }
+    position_scrolls();
 }
 
 void ContainerBox::update_children_position(TypedArray<Node> children){
-    Vector2 position = Vector2(0, get_padding_up());
-    // Add padding - Future update.
-    
+    Vector2 position = Vector2(0, get_padding_up()); // scrolling here if used...
+    Vector2 overflow = Vector2(0, 0);
+    Vector2 sum_child_sizes = Vector2(0, get_padding_up());
+
+    if(content_box){
+        position.x += content_box->scroll_left_px;
+        position.y += content_box->scroll_top_px;
+    }
+
     for (size_t i = 0; i < children.size(); i++)
     {
         auto current_child = children[i];
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
-            if(container->position_type == Position::STATIC){
-                position.y += container->get_margin_up();
-                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left(),
-                                                position.y));
-                position.y += container->get_height();
-                position.y += container->get_margin_down();
-                position.y += container->get_padding_down();
-            }else if(container->position_type == Position::ABSOLUTE){
-                container->set_position(Vector2(container->get_pos_x() + get_padding_left() + container->get_margin_left(), 
-                                                container->get_pos_y() + get_padding_up() + container->get_margin_up()));                
-            }else if(container-> position_type == Position::RELATIVE){
+            double sum_y = container->get_height() + container->get_padding_up() + container->get_padding_down() + container->get_margin_up() + container->get_margin_down();
+            double sum_x = container->get_width() + container->get_padding_left() + container->get_padding_right() + container->get_margin_left() + container->get_margin_right();
+
+            if(container->position_type == Harmonia::Position::STATIC){
                 position.y += container->get_margin_up();
                 position.y += container->get_padding_up();
-                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left() + container->get_pos_x(),
+                container->set_position(Vector2(position.x + get_padding_left() + container->get_margin_left(),
+                                                position.y));
+                position.y += container->get_height() + container->get_margin_down() + container->get_padding_down();
+                overflow.x = calculate_overflow(get_width(), sum_x, overflow.x);
+                sum_child_sizes.y += sum_y;
+            }else if(container->position_type == Harmonia::Position::ABSOLUTE){
+                double pos_container_x = container->get_pos_x() + get_padding_left() + container->get_margin_left();
+                double pos_container_y = container->get_pos_y() + get_padding_up() + container->get_margin_up();
+                container->set_position(Vector2(pos_container_x, pos_container_y));
+                // overflow check
+                overflow.x = calculate_overflow(get_width(), pos_container_x+container->get_width()+container->get_margin_right()+container->get_padding_right(), overflow.x);
+                overflow.y = calculate_overflow(get_height(), pos_container_y+container->get_height()+container->get_padding_down()+container->get_margin_down(), overflow.y);
+            }else if(container-> position_type == Harmonia::Position::RELATIVE){
+                position.y += container->get_margin_up();
+                position.y += container->get_padding_up();
+                double pos_container_x = position.x + get_padding_left() + container->get_margin_left() + container->get_pos_x();
+                container->set_position(Vector2(pos_container_x,
                                                 position.y + container->get_pos_y()));
-                position.y += container->get_height();
-                position.y += container->get_margin_down();
-                position.y += container->get_padding_down();
+                position.y += container->get_height() + container->get_margin_down() + container->get_padding_down();
+
+                overflow.x = calculate_overflow(get_width(), sum_x+container->get_pos_x(), overflow.x);
+                overflow.y = calculate_overflow(get_height(), sum_y+container->get_pos_y(), overflow.y);
+
+                sum_child_sizes.y += sum_y;
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
             double side_left = control->get_anchor(Side::SIDE_LEFT);
@@ -250,6 +481,25 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
             position.y += control->get_size().y;
         }
     }
+
+    overflow.x = calculate_overflow(get_width(), sum_child_sizes.x, overflow.x);
+    overflow.y = calculate_overflow(get_height(), sum_child_sizes.y, overflow.y);
+
+    if(overflow.x > 0){
+        is_overflowed_x = true;
+        set_overflow_x_size(overflow.x);
+    }else{
+        is_overflowed_x = false;
+        set_overflow_x_size(0);
+    }
+
+    if(overflow.y > 0){
+        is_overflowed_y = true;
+        set_overflow_y_size(overflow.y);
+    }else{
+        is_overflowed_y = false;
+        set_overflow_y_size(0);
+    }
 }
 
 void ContainerBox::editor_update_presentation(){
@@ -259,8 +509,14 @@ void ContainerBox::editor_update_presentation(){
 
     Vector2 new_size = Vector2(editor_calculate_total_width(), editor_calculate_total_height());
     ContainerBox::set_size(new_size);
-    ContainerBox::editor_check_overflow();
-    editor_update_children_position(get_children());
+    if(content_box){
+        content_box->set_size(Vector2(editor_get_width(), editor_get_height()));
+        editor_update_children_position(content_box->get_children());
+        content_box->apply_overflowing();
+    }else{
+        editor_update_children_position(get_children());
+    }
+    editor_position_scrolls();
 }
 
 void ContainerBox::editor_update_children_position(TypedArray<Node> children)
@@ -272,17 +528,17 @@ void ContainerBox::editor_update_children_position(TypedArray<Node> children)
     {
         auto current_child = children[i];
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
-            if(container->position_type == Position::STATIC){
+            if(container->position_type == Harmonia::Position::STATIC){
                 position.y += container->editor_get_margin_up();
                 container->set_position(Vector2(position.x + container->editor_get_margin_left() + editor_get_padding_left(), 
                                                 position.y));
                 position.y += container->editor_get_height();
                 position.y += container->editor_get_margin_down();
                 position.y += container->editor_get_padding_down();
-            }else if(container->position_type == Position::ABSOLUTE){
+            }else if(container->position_type == Harmonia::Position::ABSOLUTE){
                 container->set_position(Vector2(container->editor_get_pos_x() + container->editor_get_margin_left() + editor_get_padding_left(), 
                                                 container->editor_get_pos_y() + editor_get_padding_up() + container->editor_get_margin_up()));
-            }else if(container-> position_type == Position::RELATIVE){
+            }else if(container-> position_type == Harmonia::Position::RELATIVE){
                 position.y += container->editor_get_margin_up();
                 position.y += container->editor_get_padding_up();
                 container->set_position(Vector2(position.x + editor_get_padding_left() + container->editor_get_margin_left() + container->editor_get_pos_x(), 
@@ -400,6 +656,13 @@ ContainerBox* ContainerBox::get_parent_container()
     if(auto* container_box = Object::cast_to<ContainerBox>(parent_node))
     {
         return container_box;
+    }
+
+    // Basically retrieves parent of a content box if its inside of a content box. 
+    Node* deep_parent = get_parent()->get_parent();
+    if(auto* deep_container_box = Object::cast_to<ContainerBox>(deep_parent))
+    {
+        return deep_container_box;
     }
 
     return nullptr;
@@ -728,28 +991,19 @@ void ContainerBox::set_background_color(Color color){
     queue_redraw();
 }
 
-void ContainerBox::set_position_type(Position new_type){
+void ContainerBox::set_position_type(Harmonia::Position new_type){
     position_type = new_type;
 }
-
-ContainerBox::Position ContainerBox::get_position_type(){
+Harmonia::Position ContainerBox::get_position_type(){
     return position_type;
 }
 
-void ContainerBox::set_overflow_behaviour_x(OverflowBehaviour behaviour){
-    overflow_behaviour_x = behaviour;
+void ContainerBox::set_overflow_behaviour(Harmonia::OverflowBehaviour behaviour){
+    overflow_behaviour = behaviour;
 }
 
-ContainerBox::OverflowBehaviour ContainerBox::get_overflow_behaviour_x(){
-    return overflow_behaviour_x;
-}
-
-void ContainerBox::set_overflow_behaviour_y(OverflowBehaviour behaviour){
-    overflow_behaviour_y = behaviour;
-}
-
-ContainerBox::OverflowBehaviour ContainerBox::get_overflow_behaviour_y(){
-    return overflow_behaviour_y;
+Harmonia::OverflowBehaviour ContainerBox::get_overflow_behaviour(){
+    return overflow_behaviour;
 }
 
 void ContainerBox::set_pos_x(double new_x, Harmonia::Unit unit_type){
@@ -892,14 +1146,6 @@ void ContainerBox::_notification(int p_what)
 }
 
 void ContainerBox::_bind_methods(){
-    BIND_ENUM_CONSTANT(Position::STATIC);
-    BIND_ENUM_CONSTANT(Position::ABSOLUTE);
-    BIND_ENUM_CONSTANT(Position::RELATIVE);
-
-    BIND_ENUM_CONSTANT(OverflowBehaviour::HIDDEN);
-    BIND_ENUM_CONSTANT(OverflowBehaviour::SCROLL);
-    BIND_ENUM_CONSTANT(OverflowBehaviour::VISIBLE);
-
     ClassDB::bind_method(D_METHOD("set_width", "length", "unit_type"), &ContainerBox::set_width);
     ClassDB::bind_method(D_METHOD("get_width", "unit_type"), &ContainerBox::get_width);
     ClassDB::bind_method(D_METHOD("set_height", "length", "unit_type"), &ContainerBox::set_height);
@@ -929,10 +1175,17 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("set_pos_y", "new_y", "unit_type"), &ContainerBox::set_pos_y);
     ClassDB::bind_method(D_METHOD("get_pos_y", "unit_type"), &ContainerBox::get_pos_y);
 
-    ClassDB::bind_method(D_METHOD("set_overflow_behaviour_x", "behaviour"), &ContainerBox::set_overflow_behaviour_x);
-    ClassDB::bind_method(D_METHOD("get_overflow_behaviour_x"), &ContainerBox::get_overflow_behaviour_x);
-    ClassDB::bind_method(D_METHOD("set_overflow_behaviour_y", "behaviour"), &ContainerBox::set_overflow_behaviour_y);
-    ClassDB::bind_method(D_METHOD("get_overflow_behaviour_y"), &ContainerBox::get_overflow_behaviour_y);
+    ClassDB::bind_method(D_METHOD("set_overflow_behaviour", "behaviour"), &ContainerBox::set_overflow_behaviour);
+    ClassDB::bind_method(D_METHOD("get_overflow_behaviour"), &ContainerBox::get_overflow_behaviour);
+    
+    ClassDB::bind_method(D_METHOD("set_horizontal_scroll", "scroll"), &ContainerBox::set_horizontal_scroll);
+    ClassDB::bind_method(D_METHOD("get_horizontal_scroll"), &ContainerBox::get_horizontal_scroll);
+    ClassDB::bind_method(D_METHOD("set_vertical_scroll", "scroll"), &ContainerBox::set_vertical_scroll);
+    ClassDB::bind_method(D_METHOD("get_vertical_scroll"), &ContainerBox::get_vertical_scroll);
+    ClassDB::bind_method(D_METHOD("set_string_scroll_y_step", "scroll_y_step"), &ContainerBox::set_string_scroll_y_step);
+    ClassDB::bind_method(D_METHOD("get_string_scroll_y_step"), &ContainerBox::get_string_scroll_y_step);
+    ClassDB::bind_method(D_METHOD("set_string_scroll_x_step", "scroll_x_step"), &ContainerBox::set_string_scroll_x_step);
+    ClassDB::bind_method(D_METHOD("get_string_scroll_x_step"), &ContainerBox::get_string_scroll_x_step);
 
     ClassDB::bind_method(D_METHOD("set_margin_all", "all_sides", "unit_type", "dispatch_alert"), &ContainerBox::set_margin_all, DEFVAL(true));
     ClassDB::bind_method(D_METHOD("set_margin_y_vertical", "vertical_y", "vertical_unit", "dispatch_alert"), &ContainerBox::set_margin_y_vertical, DEFVAL(true));
@@ -978,8 +1231,11 @@ void ContainerBox::_bind_methods(){
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_TYPE_STRING, "width_str", PROPERTY_USAGE_NO_EDITOR), "set_width_str", "get_width_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_TYPE_STRING, "height_str", PROPERTY_USAGE_NO_EDITOR), "set_height_str", "get_height_str");
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug_outputs", PROPERTY_HINT_TYPE_STRING, "debug_outputs", PROPERTY_USAGE_NO_EDITOR), "set_debug_outputs", "get_debug_outputs");
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour_x", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour_x", "get_overflow_behaviour_x");
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour_Y", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour_y", "get_overflow_behaviour_y");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour", "get_overflow_behaviour");
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_y_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_y_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_y_step", "get_string_scroll_y_step");
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_x_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_x_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_x_step", "get_string_scroll_x_step");
+    ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "vertical_scroll", PROPERTY_HINT_NODE_TYPE, "vertical_scroll", PROPERTY_USAGE_DEFAULT), "set_vertical_scroll", "get_vertical_scroll");
+    ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "horizontal_scroll", PROPERTY_HINT_NODE_TYPE, "horizontal_scroll", PROPERTY_USAGE_DEFAULT), "set_horizontal_scroll", "get_horizontal_scroll");    
     ADD_PROPERTY(PropertyInfo(Variant::INT, "positioning", PROPERTY_HINT_ENUM, positioning_types, PROPERTY_USAGE_DEFAULT), "set_position_type", "get_position_type");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_x_str", PROPERTY_HINT_TYPE_STRING, "pos_x_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_x_str", "get_pos_x_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_y_str", PROPERTY_HINT_TYPE_STRING, "pos_y_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_y_str", "get_pos_y_str");
@@ -1015,6 +1271,12 @@ bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)
     }else if(name == "pos_y_str"){
         set_pos_y_str(p_value);
         return true;
+    }else if(name=="string_scroll_x_step"){
+        set_string_scroll_x_step(p_value);
+        return true;
+    }else if(name=="string_scroll_y_step"){
+        set_string_scroll_y_step(p_value);
+        return true;
     }
 	return false;
 }
@@ -1046,12 +1308,20 @@ bool ContainerBox::_get(const StringName &p_name, Variant &r_ret) const
     }else if(name == "pos_y_str"){
         r_ret = pos_y_str;
         return true;
+    }else if(name=="string_scroll_x_step"){
+        r_ret = string_scroll_x_step;
+        return true;
+    }else if(name=="string_scroll_y_step"){
+        r_ret = string_scroll_y_step;
+        return true;
     }
 	return false;
 }
 
 void ContainerBox::_get_property_list(List<PropertyInfo> *p_list) const
 {
+    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_x_step"));
+    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_y_step"));
     p_list->push_back(PropertyInfo(Variant::STRING, "width_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "height_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "margin_str"));
