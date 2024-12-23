@@ -102,33 +102,13 @@ double ContainerBox::calculate_overflow(double container, double check_size, dou
     return current_overflow;
 }
 
-double ContainerBox::get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
-    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
-
-    if(parent == nullptr){
-        return ContainerUnitConverter::get_width(pair, window_size.x, window_size, unit_type);
-    }
-
-    return ContainerUnitConverter::get_width(pair, parent->get_width(), window_size, unit_type);
-}
-
-double ContainerBox::get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type){
-    if(unit_type == Harmonia::Unit::NOT_SET) return 0;
-
-    if(parent == nullptr){
-        return ContainerUnitConverter::get_height(pair, window_size.y, window_size, unit_type);
-    }
-
-    return ContainerUnitConverter::get_height(pair, parent->get_height(), window_size, unit_type);
-}
-
 void ContainerBox::set_overflow_x_size(double value, Harmonia::Unit unit_type){
     overflow_x_size.length = value;
     overflow_x_size.unit_type = unit_type;
 }
 
 double ContainerBox::get_overflow_x_size(Harmonia::Unit unit_type){
-    return get_overflow_width_length_pair_unit(overflow_x_size, unit_type);
+    return get_width_length_pair_unit(overflow_x_size, unit_type);
 }
 
 void ContainerBox::set_overflow_y_size(double value, Harmonia::Unit unit_type){
@@ -137,7 +117,7 @@ void ContainerBox::set_overflow_y_size(double value, Harmonia::Unit unit_type){
 }
 
 double ContainerBox::get_overflow_y_size(Harmonia::Unit unit_type){
-    return get_overflow_height_length_pair_unit(overflow_y_size, unit_type);
+    return get_height_length_pair_unit(overflow_y_size, unit_type);
 }
 
 void ContainerBox::position_scrolls(){
@@ -208,7 +188,7 @@ void ContainerBox::set_scroll_y_step(double value, Harmonia::Unit unit_type){
 }
 
 double ContainerBox::get_scroll_y_step(Harmonia::Unit unit_type){
-    return get_overflow_height_length_pair_unit(scroll_y_step, unit_type);
+    return get_height_length_pair_unit(scroll_y_step, unit_type);
 }
 
 void ContainerBox::set_string_scroll_x_step(String value){
@@ -230,7 +210,7 @@ void ContainerBox::set_scroll_x_step(double value, Harmonia::Unit unit_type){
 }
 
 double ContainerBox::get_scroll_x_step(Harmonia::Unit unit_type){
-    return get_overflow_width_length_pair_unit(scroll_x_step, unit_type);
+    return get_width_length_pair_unit(scroll_x_step, unit_type);
 }
 
 void ContainerBox::draw_ui(){

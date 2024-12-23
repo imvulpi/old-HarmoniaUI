@@ -55,18 +55,6 @@ public:
     /// @return Overflow or current overflow if calculated is not bigger
     double calculate_overflow(double container, double check_size, double current_overflow);
 
-    /// @brief Helper function for getting overflow width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow width
-    /// @param unit_type wanted unit
-    /// @return overflow width in wanted unit
-    double get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-
-    /// @brief Helper function for getting overflow height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow height
-    /// @param unit_type wanted unit 
-    /// @return overflow height in wanted unit
-    double get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-
     /// @brief Is X axis overflowed
     bool is_overflowed_x { false };
     /// @brief Size of the X overflowing
