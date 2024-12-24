@@ -876,6 +876,8 @@ void ContainerBox::_notification(int p_what)
         // Process to convert new size to current unit size.
     }else if(p_what == NOTIFICATION_DRAW){
         draw_ui();
+    }else if (p_what == NOTIFICATION_PARENTED){
+        parent = get_parent_container();
     }
 }
 
