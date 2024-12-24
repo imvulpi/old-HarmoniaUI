@@ -15,17 +15,13 @@ LengthPair LengthPair::get_pair(String string_pair){
     String value_string;
     String unit_string;
 
-    for (size_t i = 0; i < string_pair.length(); i++)
+    int stoppedAt {0};
+    value_string = get_string_number(string_pair, true, true, &stoppedAt);
+    for (size_t i = stoppedAt; i < string_pair.length(); i++)
     {
-        if (string_pair[i] == '0' || string_pair[i] == '1' || string_pair[i] == '2' || string_pair[i] == '3' || 
-            string_pair[i] == '4' || string_pair[i] == '5' || string_pair[i] == '6' || string_pair[i] == '7' || 
-            string_pair[i] == '8' || string_pair[i] == '9' || string_pair[i] == '.') {
-            value_string += string_pair[i];
-        } else {
-            unit_string += string_pair[i];
-        }
+        unit_string += string_pair[i];
     }
-
+    
     double value = value_string.to_float();
     Harmonia::Unit unit = get_unit(unit_string);
 
