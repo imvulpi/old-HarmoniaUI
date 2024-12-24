@@ -145,15 +145,15 @@ void ContainerBox::update_container_overflows(TypedArray<Node> children){
                 overflow_check_x += sum_x;
                 sum_child_sizes.y += sum_y;
             }else if(container->position_type == Harmonia::Position::ABSOLUTE){             
-                overflow_check_x += container->get_width() + container->get_pos_x() + sum_x;
-                overflow_check_y += container->get_height() + container->get_pos_y() + sum_y;
+                overflow_check_x += container->get_pos_x() + sum_x;
+                overflow_check_y += container->get_pos_y() + sum_y;
             }else if(container-> position_type == Harmonia::Position::RELATIVE){
-                overflow_check_x += sum_x+container->get_pos_x();
-                overflow_check_y += sum_y+container->get_pos_y();
+                overflow_check_x += container->get_pos_x() + sum_x;
+                overflow_check_y += container->get_pos_y() + sum_y;
                 sum_child_sizes.y += sum_y;
             }
             overflow.x = calculate_overflow(get_width(), overflow_check_x, overflow.x);
-            overflow.x = calculate_overflow(get_width(), overflow_check_y, overflow.x);
+            overflow.y = calculate_overflow(get_height(), overflow_check_y, overflow.y);
         }
         else if(auto* control = Object::cast_to<Control>(current_child)){
             // UNIMPLEMENTED
