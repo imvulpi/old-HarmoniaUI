@@ -55,6 +55,14 @@ public:
     /// @return Overflow or current overflow if calculated is not bigger
     double calculate_overflow(double container, double check_size, double current_overflow);
 
+    /// @brief Checks overflows Y and X and sets overflow values.
+    /// @param overflow the overflows
+    void check_overflows(Vector2 overflow);
+
+    /// @brief Updates this containers overflows calculated from children and other
+    /// @param children the children nodes of this container
+    void update_container_overflows(TypedArray<Node> children);
+
     /// @brief Is X axis overflowed
     bool is_overflowed_x { false };
     /// @brief Size of the X overflowing
@@ -81,6 +89,9 @@ public:
 
     /// @brief Updates positions of vertical and horizontal scrollbars, for now: vertical on left, horizontal down
     void position_scrolls();
+
+    /// @brief Updates scrolls based on overflows etc.
+    void update_scrolls();
 
     /// @brief Vertical scroll which will be used when overflowing occurs
     VScrollBar* vertical_scroll {nullptr};
@@ -155,7 +166,7 @@ public:
     void update_presentation();
     /// @brief Updates the container children positions in runtime
     void update_children_position(TypedArray<Node> children);
-    
+
     /// @brief Updates a child control node anchors based on this container, for example enforces min/max values for anchors
     /// @param control The child control taht anchors should be updated on.
     void update_control_anchors(Control* control);
