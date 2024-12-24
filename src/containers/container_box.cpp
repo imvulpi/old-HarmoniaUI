@@ -291,7 +291,7 @@ double ContainerBox::get_scroll_x_step(Harmonia::Unit unit_type){
 }
 
 void ContainerBox::draw_ui(){
-    Rect2 rect = Rect2(Vector2(0, 0), Size2(calculate_total_width(), calculate_total_height()));
+    Rect2 rect = Rect2(Vector2(0, 0), Size2(ceil(calculate_total_width()), ceil(calculate_total_height())));
     draw_rect(rect, background_color);
 }
 
