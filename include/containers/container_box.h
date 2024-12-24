@@ -34,8 +34,11 @@ public:
     double update_interval {1.0};
 
     void ContainerBox::_enter_tree();
+    void on_window_size_changed();
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
+
+    Size2 window_size;
 
     /// @brief Content box of this container if it's using one.
     ContentBox* content_box {nullptr};
@@ -52,29 +55,13 @@ public:
     /// @return Overflow or current overflow if calculated is not bigger
     double calculate_overflow(double container, double check_size, double current_overflow);
 
-    /// @brief Helper function for getting overflow width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow width
-    /// @param unit_type wanted unit
-    /// @return overflow width in wanted unit
-    double get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    /// @brief Checks overflows Y and X and sets overflow values.
+    /// @param overflow the overflows
+    void check_overflows(Vector2 overflow);
 
-    /// @brief Helper function for getting overflow height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow height
-    /// @param unit_type wanted unit 
-    /// @return overflow height in wanted unit
-    double get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-
-    /// @brief [EDITOR] Helper function for getting overflow width of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow width
-    /// @param unit_type wanted unit
-    /// @return overflow width in wanted unit
-
-    double editor_get_overflow_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-    /// @brief [EDITOR] Helper function for getting overflow height of a provided LengthPair in any Harmonia unit. (Here to remove repetitions)
-    /// @param pair the overflow height
-    /// @param unit_type wanted unit 
-    /// @return overflow height in wanted unit
-    double editor_get_overflow_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
+    /// @brief Updates this containers overflows calculated from children and other
+    /// @param children the children nodes of this container
+    void update_container_overflows(TypedArray<Node> children);
 
     /// @brief Is X axis overflowed
     bool is_overflowed_x { false };
@@ -87,9 +74,6 @@ public:
     /// @brief Gets size of X overflowing
     /// @param unit_type unit which it should be returned in
     double get_overflow_x_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
-    /// @brief [EDITOR] Gets size of X overflowing
-    /// @param unit_type unit which it should be returned in
-    double editor_get_overflow_x_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
     /// @brief is Y axis overflowed
     bool is_overflowed_y { false };
@@ -102,14 +86,12 @@ public:
     /// @brief Gets a size of Y size overflowing
     /// @param unit_type unit which you want overflow y size to be returned in
     double get_overflow_y_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
-    /// @brief [EDITOR] Gets a size of Y size overflowing
-    /// @param unit_type unit which you want overflow y size to be returned in 
-    double editor_get_overflow_y_size(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
     /// @brief Updates positions of vertical and horizontal scrollbars, for now: vertical on left, horizontal down
     void position_scrolls();
-    /// @brief [EDITOR] Updates positions of vertical and horizontal scrollbars, for now: vertical on left, horizontal down
-    void editor_position_scrolls();
+
+    /// @brief Updates scrolls based on overflows etc.
+    void update_scrolls();
 
     /// @brief Vertical scroll which will be used when overflowing occurs
     VScrollBar* vertical_scroll {nullptr};
@@ -148,10 +130,6 @@ public:
     /// @param value step y
     /// @param unit_type unit of value 
     double get_scroll_y_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
-    /// @brief [EDITOR] Simple getter for step y
-    /// @param value step y
-    /// @param unit_type unit of value
-    double editor_get_scroll_y_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
    
     /// @brief Value in which scroll left or right will change when scrolling is detected
     LengthPair scroll_x_step;
@@ -168,9 +146,6 @@ public:
     /// @brief Simple getter for step x
     /// @param value step x
     double get_scroll_x_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
-    /// @brief [EDITOR] Simple getter for step x
-    /// @param value step x
-    double editor_get_scroll_x_step(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
     /// @brief Functions as _draw but doesnt override the _draw instead it's used when draw notification is emmited.  
     void draw_ui();
@@ -187,35 +162,14 @@ public:
     /// @return Height in the specified unit you want.
     double get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
 
-    /// @brief [EDITOR] Helper function for getting height of a provided LengthPair in any Harmonia unit specifically for editor (Here to remove repetitions)
-    /// @param pair The LengthPair you want the height from.
-    /// @param unit_type Harmonia unit you want the height to be in.
-    /// @return Height in the specified unit you want.
-    double editor_get_width_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-
-    /// @brief [EDITOR] Helper function for getting width of a provided LengthPair in any Harmonia unit specifically for editor (Here to remove repetitions)
-    /// @param pair The LengthPair you want the width from.
-    /// @param unit_type Harmonia unit you want the width to be in.
-    /// @return Width in the specified unit you want.
-    double editor_get_height_length_pair_unit(LengthPair pair, Harmonia::Unit unit_type);
-
     /// @brief Updates the container presentation/view in runtime
     void update_presentation();
     /// @brief Updates the container children positions in runtime
     void update_children_position(TypedArray<Node> children);
-    
-    /// @brief [EDITOR] Updates the container presentation/view in editor
-    void editor_update_presentation();
-    /// @brief [EDITOR] Updates the container children positions in editor
-    void editor_update_children_position(TypedArray<Node> children);
 
     /// @brief Updates a child control node anchors based on this container, for example enforces min/max values for anchors
     /// @param control The child control taht anchors should be updated on.
     void update_control_anchors(Control* control);
-
-    /// @brief [EDITOR] Updates a child control node anchors based on this container, for example enforces min/max values for anchors specifically for the editor
-    /// @param control The child control taht anchors should be updated on.
-    void editor_update_control_anchors(Control* control);
 
     /// @brief Alert manager of this containers. Bind to this manager if you want to react to this containers alerts
     AlertManager* alert_manager = memnew(AlertManager);
@@ -260,12 +214,6 @@ public:
     /// @param unit_type what unit type should the paddings be in.
     TypedArray<double> get_paddings(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
-    /// @brief [EDITOR] A helper function to get all paddings as a typed array for the editor. 
-    ///
-    /// indexes values are: 0-up, 1-right, 2-down, 3-left 
-    /// @param unit_type what unit type should the paddings be in.
-    TypedArray<double> editor_get_paddings(Harmonia::Unit unit_type = Harmonia::PIXEL);
-
     /// @brief Upper(Up) padding of this container
     LengthPair padding_up;
     /// @brief Simple setter for the upper(Up) padding, dispatches an alert.
@@ -273,8 +221,6 @@ public:
     void set_padding_up(double up, Harmonia::Unit up_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the upper(Up) padding in any harmonia unit
     double get_padding_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the upper(Up) padding in any harmonia unit
-    double editor_get_padding_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     
     /// @brief Lower(Down) padding of this container
     LengthPair padding_down;
@@ -283,8 +229,6 @@ public:
     void set_padding_down(double down, Harmonia::Unit down_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the lower(Down) padding in any harmonia unit
     double get_padding_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the lower(Down) padding in any harmonia unit
-    double editor_get_padding_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Left padding of this container
     LengthPair padding_left;
@@ -293,8 +237,6 @@ public:
     void set_padding_left(double left, Harmonia::Unit left_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the left padding in any harmonia unit
     double get_padding_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the left padding in any harmonia unit
-    double editor_get_padding_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
    
     /// @brief Right padding of this container
     LengthPair padding_right;
@@ -303,8 +245,6 @@ public:
     void set_padding_right(double right, Harmonia::Unit right_unit, bool dispatch_alert_and_queue = true);
     /// @brief Simple getter for the right padding in any harmonia unit
     double get_padding_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the right padding in any harmonia unit
-    double editor_get_padding_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Margins in string which later gets processed to retrieve up/down/left/right margins. 
     String margin_str;
@@ -333,12 +273,6 @@ public:
     /// @param unit_type what unit type should the margins be in.
     TypedArray<double> get_margins(Harmonia::Unit unit_type = Harmonia::PIXEL);
 
-    /// @brief [EDITOR] A helper function to get all margins as a typed array for the editor. 
-    ///
-    /// indexes values are: 0-up, 1-right, 2-down, 3-left 
-    /// @param unit_type what unit type should the margins be in.
-    TypedArray<double> editor_get_margins(Harmonia::Unit unit_type = Harmonia::PIXEL);
-
     /// @brief Upper(Up) margin of this container
     LengthPair margin_up;
     /// @brief Simple setter for the upper(Up) margin, dispatches an alert.
@@ -346,8 +280,6 @@ public:
     void set_margin_up(double up, Harmonia::Unit up_unit, bool dispatch_alert = true);
     /// @brief Simple getter for the upper(Up) margin in any harmonia unit
     double get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the upper(Up) margin in any harmonia unit
-    double editor_get_margin_up(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     
     /// @brief Lower(Down) margin of this container
     LengthPair margin_down;
@@ -356,8 +288,6 @@ public:
     void set_margin_down(double down, Harmonia::Unit down_unit, bool dispatch_alert = true);
     /// @brief Simple getter for the lower(Down) margin in any harmonia unit
     double get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the lower(Down) margin in any harmonia unit
-    double editor_get_margin_down(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Left margin of this container
     LengthPair margin_left;
@@ -366,8 +296,6 @@ public:
     void set_margin_left(double left, Harmonia::Unit left_unit, bool dispatch_alert = true);
     /// @brief Simple getter for the left margin in any harmonia unit
     double get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the left margin in any harmonia unit
-    double editor_get_margin_left(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
    
     /// @brief Right margin of this container
     LengthPair margin_right;
@@ -376,8 +304,6 @@ public:
     void set_margin_right(double right, Harmonia::Unit right_unit, bool dispatch_alert = true);
     /// @brief Simple getter for the right margin in any harmonia unit
     double get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-    /// @brief [EDITOR] Simple getter for the right margin in any harmonia unit
-    double editor_get_margin_right(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Background color of this container, by default transparent.
     Color background_color = Color(0, 0, 0, 0);
@@ -415,10 +341,6 @@ public:
     /// @param unit_type The unit type you want x pos to be returned in.
     double get_pos_x(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
-    /// @brief Editor way of retrieving X position
-    /// @param unit_type The unit type you want x pos to be returned in.
-    double editor_get_pos_x(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
     /// @brief String posistion that gets processed to create a pos_x length pair when set by setter method.
     String pos_x_str;
 
@@ -438,10 +360,6 @@ public:
     /// @brief Retrieves Y position in a provided unit.
     /// @param unit_type The unit type you want y pos to be returned in.
     double get_pos_y(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
-    /// @brief Editor way of retrieving Y position
-    /// @param unit_type The unit type you want y pos to be returned in.
-    double editor_get_pos_y(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief String posistion that gets processed to create a pos_y length pair when set by setter method.
     String pos_y_str;
@@ -475,19 +393,10 @@ public:
     /// @param unit_type The unit type total width should be returned with.
     double calculate_total_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
-    /// @brief [EDITOR] Calculates the width with addition of other specific attributes, whether thats container specific or for example padding for editor
-    /// @param unit_type The unit type total width should be returned with.
-    double editor_calculate_total_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
     /// @brief Sets the width to provided length and unit
     /// @param length Width length
     /// @param unit_type Width length unit type 
     void set_width(double length, Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
-    /// @brief An editor way of getting width, don't use runtime
-    /// @param unit_type Width unit type
-    /// @return Width in provided unit type
-    double editor_get_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Gets current width pair in a string representation
     /// @return Width string representation
@@ -509,19 +418,10 @@ public:
     /// @param unit_type The unit type total height should be returned with.
     double calculate_total_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
-    /// @brief [EDITOR] Calculates the height with addition of other specific attributes, whether thats container specific or for example padding for editor
-    /// @param unit_type The unit type total height should be returned with.
-    double editor_calculate_total_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
     /// @brief Sets the height to provided length and unit
     /// @param length Height length
     /// @param unit_type Height length unit type 
     void set_height(double length, Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
-
-    /// @brief An editor way of getting height, don't use runtime
-    /// @param unit_type Height unit type
-    /// @return Height in provided unit type
-    double editor_get_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
     
     /// @brief Gets current height pair in a string representation
     /// @return Height string representation
