@@ -1,0 +1,32 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="HarmoniaLab"
+config/description="Harmonia Lab is a Godot testing project for the Harmonia library, designed to experiment with and test the library’s features. It provides a simple environment to test and verify different functionalities of Harmonia within the Godot engine. It contains: Tests, Examples, Showcases and more."
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+config/macos_native_icon="res://icons/icon.icns"
+config/windows_native_icon="res://icons/icon.ico"
+
+[display]
+
+window/show_image=true
+window/description="HarmoniaTestLab is a Godot testing project for the Harmonia library, designed to experiment with and test the library’s features. It provides a simple environment to test and verify different functionalities of Harmonia within the Godot engine. It contains: Tests, Examples, Showcases and more."
+
+[dotnet]
+
+project/assembly_name="HarmoniaLab"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
