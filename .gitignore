@@ -1,3 +1,20 @@
+# Godot tests projects ignores:
+
+/tests/**/.godot/
+
+# Godot-specific ignores
+/tests/**/*.import
+/tests/export.cfg
+/tests/export_presets.cfg
+
+# Imported translations (automatically generated from CSV files)
+/tests/**/*.translation
+
+# Mono-specific ignores
+/tests/**/*.mono/
+/tests/**/data_*/
+/tests/**/mono_crash.*.json
+
 # Generated
 /src/gen/
 .sconsign.dblite
