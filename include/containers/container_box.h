@@ -172,6 +172,10 @@ public:
 
     /// @brief Updates the container presentation/view in runtime
     void update_presentation();
+
+    /// @brief Self positioning, gets called when there is no parent
+    void update_self_position();
+
     /// @brief Updates the container children positions in runtime
     void update_children_position(TypedArray<Node> children);
 
