@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="67.7761mm"
+   height="67.616249mm"
+   viewBox="0 0 67.7761 67.616249"
+   version="1.1"
+   id="svg5"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.1704066"
+     inkscape:cx="537.42009"
+     inkscape:cy="164.04556"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1868"
+       x="-0.45446539"
+       y="-0.43411621"
+       width="1.9089308"
+       height="1.8682324">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.7018809"
+         id="feGaussianBlur1870" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1872"
+       x="-0.76644886"
+       y="-0.73384291"
+       width="2.5328977"
+       height="2.4676857">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.7018809"
+         id="feGaussianBlur1874" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1876"
+       x="-1.6208237"
+       y="-1.4316016"
+       width="4.2416472"
+       height="3.8632035">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.7018809"
+         id="feGaussianBlur1878" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter2000"
+       x="-0.15828657"
+       y="-0.18564892"
+       width="1.3165731"
+       height="1.3712978">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.99713663"
+         id="feGaussianBlur2002" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="display:none;fill:#2c89a0;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+       id="path1073"
+       cx="33.88805"
+       cy="33.808125"
+       r="27.014296" />
+    <g
+       id="g1084"
+       inkscape:export-filename="harmoniaLogo.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <g
+         id="g962"
+         inkscape:label="sun"
+         transform="translate(-58.185141,-39.802477)">
+        <circle
+           style="fill:#ffd42a;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path234"
+           cx="75.129166"
+           cy="90.474701"
+           r="16.944025"
+           inkscape:label="main" />
+        <circle
+           style="fill:#ffeeaa;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path681"
+           cx="81.947128"
+           cy="79.573486"
+           r="1.8084884"
+           inkscape:label="bright2" />
+        <ellipse
+           style="fill:#ffeeaa;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path839"
+           cx="83.121635"
+           cy="85.359528"
+           rx="0.87917113"
+           ry="1.0390204"
+           inkscape:label="bright1" />
+      </g>
+      <g
+         id="g952"
+         transform="translate(-58.185141,-39.802477)"
+         inkscape:label="moon">
+        <circle
+           style="fill:#333333;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path234-0"
+           cx="109.01722"
+           cy="56.746502"
+           r="16.944025"
+           inkscape:label="main" />
+        <circle
+           style="fill:#666666;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path841"
+           cx="99.692917"
+           cy="63.523151"
+           r="1.5824274"
+           inkscape:label="bright2" />
+        <ellipse
+           style="fill:#666666;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke"
+           id="path947"
+           cx="103.76202"
+           cy="67.705284"
+           rx="1.2433357"
+           ry="1.1303053"
+           inkscape:label="bright1" />
+      </g>
+    </g>
+    <path
+       id="path1138"
+       style="display:none;opacity:0.165618;mix-blend-mode:normal;fill:#d5fff6;fill-rule:evenodd;stroke-width:0.32872;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke;filter:url(#filter2000)"
+       d="m 50.744472,43.534998 a 4.4937572,4.704402 25.695926 0 0 -6.089283,2.290892 4.4937572,4.704402 25.695926 0 0 2.009705,6.187386 4.4937572,4.704402 25.695926 0 0 6.08906,-2.290423 4.4937572,4.704402 25.695926 0 0 -2.009482,-6.187855 z m -8.730545,3.409647 a 2.6645706,2.7829623 25.695926 0 0 -3.608008,1.352071 2.6645706,2.7829623 25.695926 0 0 1.194813,3.66309 2.6645706,2.7829623 25.695926 0 0 3.607543,-1.352293 2.6645706,2.7829623 25.695926 0 0 -1.194348,-3.662868 z m 2.59219,6.37247 a 1.2600119,1.426554 25.695926 0 0 -1.753704,0.738949 1.2600119,1.426554 25.695926 0 0 0.516633,1.831962 1.2600119,1.426554 25.695926 0 0 1.753927,-0.739414 1.2600119,1.426554 25.695926 0 0 -0.516856,-1.831497 z" />
+    <ellipse
+       style="display:none;opacity:0.341719;mix-blend-mode:normal;fill:#1c2224;fill-rule:evenodd;stroke-width:0.32872;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke;filter:url(#filter1868)"
+       id="path1138-2"
+       cx="-23.708225"
+       cy="9.305851"
+       rx="4.4937572"
+       ry="4.704402"
+       transform="rotate(-113.82148)" />
+    <ellipse
+       style="display:none;opacity:0.341719;mix-blend-mode:normal;fill:#1c2224;fill-rule:evenodd;stroke-width:0.850385;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke;filter:url(#filter1872)"
+       id="path1142-6"
+       cx="-30.097347"
+       cy="14.24206"
+       rx="2.6645706"
+       ry="2.7829623"
+       transform="rotate(-113.82148)" />
+    <ellipse
+       style="display:none;opacity:0.341719;mix-blend-mode:normal;fill:#1c2224;fill-rule:evenodd;stroke-width:0.418678;stroke-linecap:round;stroke-linejoin:bevel;paint-order:fill markers stroke;filter:url(#filter1876)"
+       id="path1142-9-6"
+       cx="-24.998085"
+       cy="17.503984"
+       rx="1.2600119"
+       ry="1.426554"
+       transform="rotate(-113.82148)" />
+  </g>
+</svg>
