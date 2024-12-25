@@ -367,6 +367,9 @@ void ContainerBox::set_alert_manager(AlertManager* manager){
 void ContainerBox::update_presentation(){
     if(parent == nullptr){
         parent = get_parent_container();
+        if(parent == nullptr){
+            update_self_position();
+        }
     }
     
     Vector2 new_size = Vector2(calculate_total_width(), calculate_total_height());
@@ -407,10 +410,25 @@ void ContainerBox::update_presentation(){
     position_scrolls();
 }
 
+void ContainerBox::update_self_position(){
+    Vector2 position = Vector2(0, 0); // scrolling here if used...
+
+    position.y += get_margin_up();
+    position.x += get_margin_left();
+
+    if(position_type == Harmonia::Position::ABSOLUTE || position_type == Harmonia::Position::RELATIVE){
+        position.y += get_pos_y();
+        position.x += get_pos_x();
+    }
+
+    set_position(position);
+}
+
 void ContainerBox::update_children_position(TypedArray<Node> children){
     Vector2 position = Vector2(0, get_padding_up()); // scrolling here if used...
 
     if(content_box && overflow_behaviour == Harmonia::OverflowBehaviour::SCROLL){
+        position.y = 0;
         position.x += content_box->scroll_left_px + content_box->offset_left_px;
         position.y += content_box->scroll_top_px + content_box->offset_top_px;
     }
@@ -438,7 +456,7 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
                 container->set_position(Vector2(pos_container_x, pos_container_y));                
             }else if(container-> position_type == Harmonia::Position::RELATIVE){
                 position.y += m_up;
-                double pos_container_x = position.x + container->get_pos_x() + get_padding_left() + m_left;
+                double pos_container_x = position.x + container->get_pos_x() + m_left;
                 container->set_position(Vector2(pos_container_x, position.y + container->get_pos_y()));
                 position.y += container->get_height() + m_down + p_down + p_up;
             }
