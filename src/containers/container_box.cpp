@@ -375,6 +375,8 @@ void ContainerBox::update_presentation(){
     if(content_box){
         update_children_position(content_box->get_children());
         content_box->set_size(Vector2(get_width(), get_height())); // Set to 100%, 100% no padding.
+        content_box->set_position(Vector2(get_padding_left(), get_padding_up()));
+
         content_box->apply_overflowing();
         content_box->standalone = false;
         if(is_overflowed_x || is_overflowed_y){
@@ -427,18 +429,18 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
             double p_right = container->get_padding_right();
 
             if(container->position_type == Harmonia::Position::STATIC){
-                position.y += m_up + p_up;
-                container->set_position(Vector2(position.x + m_left + p_left, position.y));
-                position.y += container->get_height() + m_down + p_down;
+                position.y += m_up;
+                container->set_position(Vector2(position.x + m_left, position.y));
+                position.y += container->get_height() + m_down + p_down + p_up;
             }else if(container->position_type == Harmonia::Position::ABSOLUTE){
-                double pos_container_x = container->get_pos_x() + m_left + p_left;
-                double pos_container_y = container->get_pos_y() + m_up + p_up;
+                double pos_container_x = container->get_pos_x() + m_left;
+                double pos_container_y = container->get_pos_y() + m_up;
                 container->set_position(Vector2(pos_container_x, pos_container_y));                
             }else if(container-> position_type == Harmonia::Position::RELATIVE){
-                position.y += m_up + p_up;
+                position.y += m_up;
                 double pos_container_x = position.x + container->get_pos_x() + get_padding_left() + m_left;
                 container->set_position(Vector2(pos_container_x, position.y + container->get_pos_y()));
-                position.y += container->get_height() + m_down + p_down;
+                position.y += container->get_height() + m_down + p_down + p_up;
             }
         }else if(auto* control = Object::cast_to<Control>(current_child)){
             double side_left = control->get_anchor(Side::SIDE_LEFT);
