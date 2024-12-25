@@ -63,6 +63,14 @@ public:
     /// @param children the children nodes of this container
     void update_container_overflows(TypedArray<Node> children);
 
+    /// @brief Negative oveflow on X axis specifically LEFT (in px)
+    /// @note this is counted towards the normal overflow size and is applied to scrolls to move them according to overflow
+    double negative_overflow_x {0};
+
+    /// @brief Negative overflow on Y axis specifically TOP (in px)
+    /// @note This is counted towards the normal overflow size and is applied to scrolls to move them according to overflow
+    double negative_overflow_y {0};
+
     /// @brief Is X axis overflowed
     bool is_overflowed_x { false };
     /// @brief Size of the X overflowing
