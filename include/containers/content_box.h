@@ -37,23 +37,28 @@ public:
     /// @brief Checking size in % around scollbar x, if scrolled in that area scrollx is used.
     double scroll_x_checking_size = {0.2};
     
-    /// @brief Distance between min scroll top down
+    /// @brief Value of how much have containers been moved from top (increases on going down/decreases on going up)
     double scroll_top_px {0};
     /// @brief Sets scroll top px
     void set_scroll_top_px(double value);
-    /// @brief The least value of scroll top, this is where scrolling UP stops
+    /// @brief The least value of moving containers up, this is where scrolling UP stops (usually 0)
     double min_scroll_top_px {0};
-    /// @brief The max value of scroll top, this is where scrolling DOWN stops
+    /// @brief The max value of moving containers up, this is where scrolling DOWN stops (usually overflow size y)
     double max_scroll_top_px {0};
     
-    /// @brief Distance between min scroll left right
+    /// @brief Value of how much have containers been moved from left
     double scroll_left_px {0};
     /// @brief Sets scroll left px
     void set_scroll_left_px(double value);
-    /// @brief The least value of scroll left, this is where scrolling LEFT stops
+    /// @brief The least value of moving containers left, this is where scrolling LEFT stops (usually 0)
     double min_scroll_left_px {0};
-    /// @brief The max value of scroll left, this is where scrolling RIGHT stops
+    /// @brief The max value of moving containers left, this is where scrolling RIGHT stops (usually overflow size x)
     double max_scroll_left_px {0};
+
+    /// @brief How much should all content be offsetted by? (when negative overflow) (can be used by container to offset it there)
+    double offset_left_px {0};
+    /// @brief How much should all content be offsetted by? (when negative overflow) (can be used by container to offset it there)
+    double offset_top_px {0};
 
     /// @brief Applies scrolling by steps
     /// @param step_x The movement on x axis

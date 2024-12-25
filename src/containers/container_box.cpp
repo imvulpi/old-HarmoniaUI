@@ -103,7 +103,7 @@ double ContainerBox::calculate_overflow(double container, double check_size, dou
 }
 
 void ContainerBox::check_overflows(Vector2 overflow){
-    if(overflow.x > 0){
+    if(overflow.x != 0){
         is_overflowed_x = true;
         set_overflow_x_size(overflow.x);
     }else{
@@ -111,7 +111,7 @@ void ContainerBox::check_overflows(Vector2 overflow){
         set_overflow_x_size(0);
     }
 
-    if(overflow.y > 0){
+    if(overflow.y != 0){
         is_overflowed_y = true;
         set_overflow_y_size(overflow.y);
     }else{
@@ -122,6 +122,7 @@ void ContainerBox::check_overflows(Vector2 overflow){
 
 void ContainerBox::update_container_overflows(TypedArray<Node> children){
     Vector2 overflow = Vector2(0, 0);
+    Vector2 negative_overflow = Vector2(0, 0);
     Vector2 sum_child_sizes = Vector2(0, get_padding_up());
 
     for (size_t i = 0; i < children.size(); i++)
@@ -140,20 +141,52 @@ void ContainerBox::update_container_overflows(TypedArray<Node> children){
             double sum_y = container->get_height() + m_up + m_down + p_up + p_down;
             double overflow_check_x {0};
             double overflow_check_y {0};
+            double negative_overflow_check_x {0};
+            double negative_overflow_check_y {0};
+
+            if(m_left < 0){
+                negative_overflow_check_x = m_left;
+            }
+            if(m_up < 0){
+                negative_overflow_check_y = m_up;
+            }
 
             if(container->position_type == Harmonia::Position::STATIC){
                 overflow_check_x += sum_x;
                 sum_child_sizes.y += sum_y;
-            }else if(container->position_type == Harmonia::Position::ABSOLUTE){             
-                overflow_check_x += container->get_pos_x() + sum_x;
-                overflow_check_y += container->get_pos_y() + sum_y;
+                if(debug_outputs) UtilityFunctions::print("margin left ", m_left);
+            }else if(container->position_type == Harmonia::Position::ABSOLUTE){
+                double pos_x = container->get_pos_x();
+                double pos_y = container->get_pos_y();
+                overflow_check_x += pos_x + sum_x;
+                overflow_check_y += pos_y + sum_y;
+                if(m_left + pos_x < 0){
+                    negative_overflow_check_x = (m_left + pos_x);
+                }
+                if(m_up + pos_y < 0){
+                    negative_overflow_check_y = (m_up + pos_y);
+                }
             }else if(container-> position_type == Harmonia::Position::RELATIVE){
-                overflow_check_x += container->get_pos_x() + sum_x;
-                overflow_check_y += container->get_pos_y() + sum_y;
+                double pos_x = container->get_pos_x();
+                double pos_y = container->get_pos_y();
+                overflow_check_x += pos_x + sum_x;
+                overflow_check_y += pos_y + sum_y;
                 sum_child_sizes.y += sum_y;
+                if(m_left + pos_x < 0){
+                    negative_overflow_check_x = (m_left + pos_x);
+                }
+                if(m_up + pos_y < 0){
+                    negative_overflow_check_y = (m_up + pos_y);
+                }
             }
             overflow.x = calculate_overflow(get_width(), overflow_check_x, overflow.x);
             overflow.y = calculate_overflow(get_height(), overflow_check_y, overflow.y);
+
+            if(negative_overflow_check_x < negative_overflow.x){ 
+                negative_overflow.x = negative_overflow_check_x;
+                if(debug_outputs) UtilityFunctions::print("Overflow x ", negative_overflow.x);
+            };
+            if(negative_overflow_check_y < negative_overflow.y) negative_overflow.y = negative_overflow_check_y;
         }
         else if(auto* control = Object::cast_to<Control>(current_child)){
             // UNIMPLEMENTED
@@ -162,7 +195,15 @@ void ContainerBox::update_container_overflows(TypedArray<Node> children){
     
     overflow.x = calculate_overflow(get_width(), sum_child_sizes.x, overflow.x);
     overflow.y = calculate_overflow(get_height(), sum_child_sizes.y, overflow.y);
+    negative_overflow_x = negative_overflow.x;
+    overflow.x += abs(negative_overflow.x);
+    negative_overflow_y = negative_overflow.y;
+    overflow.y += abs(negative_overflow.y);
+    check_overflows(negative_overflow);
     check_overflows(overflow);
+
+    if(debug_outputs) UtilityFunctions::print("Overflow: ", overflow);
+    if(debug_outputs) UtilityFunctions::print("Negative overflow: ", negative_overflow, "\n");
 }
 
 void ContainerBox::set_overflow_x_size(double value, Harmonia::Unit unit_type){
@@ -343,6 +384,9 @@ void ContainerBox::update_presentation(){
             content_box->overflowing_size_y_px = get_overflow_y_size();
             content_box->max_scroll_left_px = content_box->overflowing_size_x_px;
             content_box->max_scroll_top_px = content_box->overflowing_size_y_px;
+            if(debug_outputs) UtilityFunctions::print("Scroll update: (x: ", negative_overflow_x, " y: ", negative_overflow_y, ")");
+            content_box->offset_left_px = abs(negative_overflow_x);
+            content_box->offset_top_px = abs(negative_overflow_y);
         }else{
             content_box->is_overflowed_x = is_overflowed_x;
             content_box->is_overflowed_y = is_overflowed_y;
@@ -350,6 +394,8 @@ void ContainerBox::update_presentation(){
             content_box->overflowing_size_y_px = 0;
             content_box->max_scroll_left_px = 0;
             content_box->max_scroll_top_px = 0;
+            content_box->offset_left_px = 0;
+            content_box->offset_top_px = 0;
         }
     }else{
         update_children_position(get_children());
@@ -362,9 +408,9 @@ void ContainerBox::update_presentation(){
 void ContainerBox::update_children_position(TypedArray<Node> children){
     Vector2 position = Vector2(0, get_padding_up()); // scrolling here if used...
 
-    if(content_box){
-        position.x += content_box->scroll_left_px;
-        position.y += content_box->scroll_top_px;
+    if(content_box && overflow_behaviour == Harmonia::OverflowBehaviour::SCROLL){
+        position.x += content_box->scroll_left_px + content_box->offset_left_px;
+        position.y += content_box->scroll_top_px + content_box->offset_top_px;
     }
 
     for (size_t i = 0; i < children.size(); i++)
@@ -759,6 +805,9 @@ Harmonia::Position ContainerBox::get_position_type(){
 }
 
 void ContainerBox::set_overflow_behaviour(Harmonia::OverflowBehaviour behaviour){
+    if(content_box != nullptr){
+        content_box->overflowing_behaviour = behaviour;
+    }
     overflow_behaviour = behaviour;
 }
 
