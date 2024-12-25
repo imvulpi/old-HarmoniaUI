@@ -1,0 +1,1 @@
+This is a simple placeholder just to make sure people understand where bin/ folder of HarmoniaUI should be placed
