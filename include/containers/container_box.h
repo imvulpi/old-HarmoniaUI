@@ -38,6 +38,11 @@ public:
     void ContainerBox::_ready();
     void ContainerBox::_process(double delta);
 
+    Harmonia::Visibility visibility {Harmonia::Visibility::OBJECT_VISIBLE};
+    void set_visibility(Harmonia::Visibility new_visibility);
+    Harmonia::Visibility get_visibility();
+    void apply_visibility();
+
     Size2 window_size;
 
     /// @brief Content box of this container if it's using one.
