@@ -29,6 +29,13 @@ public:
         RELATIVE, // Positioned from the original location
     };
 
+    /// @brief Enum used for visibility of containers
+    enum Visibility {
+        OBJECT_VISIBLE, // Visible container
+        OBJECT_HIDDEN, // Hidden container no space allocated
+        OBJECT_TRANSPARENT // Transparent container, space allocated but not visible
+    };
+
     /// @brief Enum of units that are supported by specific length and other values.
     enum Unit {
         /// @brief Represents an unset unit.
@@ -85,3 +92,4 @@ struct LengthPair{
 VARIANT_ENUM_CAST(Harmonia::OverflowBehaviour)
 VARIANT_ENUM_CAST(Harmonia::Position)
 VARIANT_ENUM_CAST(Harmonia::Unit)
+VARIANT_ENUM_CAST(Harmonia::Visibility)
