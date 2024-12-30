@@ -72,10 +72,16 @@ void ContainerBox::_process(double time) {
 
 void ContainerBox::set_visibility(Harmonia::Visibility new_visibility){
     visibility = new_visibility;
+    apply_visibility();
 }
 
 Harmonia::Visibility ContainerBox::get_visibility(){
     return visibility;
+}
+
+void ContainerBox::apply_visibility(){
+    if(visibility == Harmonia::OBJECT_VISIBLE) set_visible(true);
+    else set_visible(false);
 }
 
 ContentBox* ContainerBox::find_content_box(){
@@ -137,6 +143,8 @@ void ContainerBox::update_container_overflows(TypedArray<Node> children){
     {
         auto current_child = children[i];
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
+            if(container->get_visibility() == Harmonia::OBJECT_HIDDEN) continue;
+
             double m_up = container->get_margin_up();
             double m_down = container->get_margin_down();
             double m_left = container->get_margin_left();
@@ -445,6 +453,8 @@ void ContainerBox::update_children_position(TypedArray<Node> children){
     {
         auto current_child = children[i];
         if(auto* container = Object::cast_to<ContainerBox>(current_child)){
+            if(container->get_visibility() == Harmonia::OBJECT_HIDDEN) continue;
+
             double m_up = container->get_margin_up();
             double m_down = container->get_margin_down();
             double m_left = container->get_margin_left();

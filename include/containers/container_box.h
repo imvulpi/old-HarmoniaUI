@@ -41,6 +41,7 @@ public:
     Harmonia::Visibility visibility {Harmonia::Visibility::OBJECT_VISIBLE};
     void set_visibility(Harmonia::Visibility new_visibility);
     Harmonia::Visibility get_visibility();
+    void apply_visibility();
 
     Size2 window_size;
 
