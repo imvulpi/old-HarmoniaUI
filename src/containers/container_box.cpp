@@ -70,6 +70,14 @@ void ContainerBox::_process(double time) {
     }
 }
 
+void ContainerBox::set_visibility(Harmonia::Visibility new_visibility){
+    visibility = new_visibility;
+}
+
+Harmonia::Visibility ContainerBox::get_visibility(){
+    return visibility;
+}
+
 ContentBox* ContainerBox::find_content_box(){
     TypedArray<Node> nodes = get_children();
 
@@ -951,6 +959,10 @@ void ContainerBox::_notification(int p_what)
 }
 
 void ContainerBox::_bind_methods(){
+
+    ClassDB::bind_method(D_METHOD("set_visibility", "new_visibility"), &ContainerBox::set_visibility);
+    ClassDB::bind_method(D_METHOD("get_visibility"), &ContainerBox::get_visibility);
+
     ClassDB::bind_method(D_METHOD("on_window_size_changed"), &ContainerBox::on_window_size_changed);
 
     ClassDB::bind_method(D_METHOD("set_width", "length", "unit_type"), &ContainerBox::set_width);
@@ -1031,9 +1043,11 @@ void ContainerBox::_bind_methods(){
 
     ClassDB::bind_method(D_METHOD("update_presentation"), &ContainerBox::update_presentation);
 
+    const String visibility_types = "VISIBLE:0,HIDDEN:1,TRANSPARENT:2";
     const String positioning_types = "STATIC:0,ABSOLUTE:1,RELATIVE:2";
     const String overflow_behaviours = "SCROLL:0,HIDDEN:1,VISIBLE:2";
 
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "visibility", PROPERTY_HINT_ENUM, visibility_types, PROPERTY_USAGE_DEFAULT), "set_visibility", "get_visibility");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "alert_manager", PROPERTY_HINT_RESOURCE_TYPE, "alert_manager", PROPERTY_USAGE_NO_EDITOR), "set_alert_manager", "get_alert_manager");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_TYPE_STRING, "width_str", PROPERTY_USAGE_NO_EDITOR), "set_width_str", "get_width_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_TYPE_STRING, "height_str", PROPERTY_USAGE_NO_EDITOR), "set_height_str", "get_height_str");
