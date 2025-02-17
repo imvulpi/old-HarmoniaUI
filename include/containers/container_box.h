@@ -33,10 +33,10 @@ public:
     /// @note This will get removed in the future.
     double update_interval {1.0};
 
-    void ContainerBox::_enter_tree();
+    void _enter_tree();
     void on_window_size_changed();
-    void ContainerBox::_ready();
-    void ContainerBox::_process(double delta);
+    void _ready();
+    void _process(double delta);
 
     Harmonia::Visibility visibility {Harmonia::Visibility::OBJECT_VISIBLE};
     void set_visibility(Harmonia::Visibility new_visibility);
