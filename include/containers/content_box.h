@@ -73,7 +73,7 @@ public:
     /// @brief Calculates overflowing based on child_pos, child_size and parent size
     double calculate_overflowing(double child_pos, double child_size, double parent_size);
 
-    void ContentBox::_gui_input(const Ref<InputEvent> &p_gui_input);
+    void _gui_input(const Ref<InputEvent> &p_gui_input);
 protected:
     static void _bind_methods();
 	bool _set(const StringName &p_name, const Variant &p_value);
