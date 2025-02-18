@@ -189,7 +189,7 @@ public:
     void update_control_anchors(Control* control);
 
     /// @brief Alert manager of this containers. Bind to this manager if you want to react to this containers alerts
-    AlertManager* alert_manager = memnew(AlertManager);
+    AlertManager* alert_manager = nullptr;
     /// @brief A simple getter for alert manager of this container
     AlertManager* get_alert_manager();
     /// @brief A simple setter for alert manager of this container
