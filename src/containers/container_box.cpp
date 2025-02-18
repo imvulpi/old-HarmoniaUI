@@ -25,6 +25,11 @@ void ContainerBox::_enter_tree(){
         get_tree()->get_root()->connect("size_changed", Callable(this, "on_window_size_changed"));
         window_size = get_tree()->get_root()->get_visible_rect().size;
     }
+
+    if(alert_manager == nullptr){
+        UtilityFunctions::print("Alert manager was null, attempting to fix that.");
+        alert_manager = memnew(AlertManager);
+    }
 }
 
 void ContainerBox::on_window_size_changed(){
@@ -591,7 +596,11 @@ void ContainerBox::set_padding_str(String new_padding){
         padding_down = LengthPair::get_pair(paddings[2]);
         padding_left = LengthPair::get_pair(paddings[3]);
 
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
         if(debug_outputs) UtilityFunctions::print("Extracted 4 paddings:", padding_up.length, padding_right.length, padding_down.length, padding_left.length);
     }
@@ -615,7 +624,11 @@ void ContainerBox::set_padding_all(double all_sides, Harmonia::Unit unit_type, b
     padding_left.unit_type = unit_type;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -627,7 +640,11 @@ void ContainerBox::set_padding_y_vertical(double vertical_y, Harmonia::Unit vert
     padding_down.unit_type = vertical_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -639,7 +656,11 @@ void ContainerBox::set_padding_x_horizontal(double horizontal_x, Harmonia::Unit 
     padding_left.unit_type = horizontal_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -659,7 +680,11 @@ void ContainerBox::set_padding_up(double up, Harmonia::Unit up_unit, bool dispat
     padding_up.unit_type = up_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -673,7 +698,11 @@ void ContainerBox::set_padding_down(double down, Harmonia::Unit down_unit, bool 
     padding_down.unit_type = down_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -687,7 +716,11 @@ void ContainerBox::set_padding_left(double left, Harmonia::Unit left_unit, bool 
     padding_left.unit_type = left_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }
 }
@@ -701,7 +734,11 @@ void ContainerBox::set_padding_right(double right, Harmonia::Unit right_unit, bo
     padding_right.unit_type = right_unit;
     if (dispatch_alert_and_queue)
     {
-        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        if (alert_manager) {
+            alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::PADDING)));
+        } else {
+            UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+        }
         queue_redraw();
     }    
 }
@@ -758,7 +795,11 @@ void ContainerBox::set_margin_all(double all_sides, Harmonia::Unit unit_type, bo
     margin_down.unit_type = unit_type;
     margin_left.length = all_sides;
     margin_left.unit_type = unit_type;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 void ContainerBox::set_margin_y_vertical(double vertical_y, Harmonia::Unit vertical_unit, bool dispatch_alert){
@@ -766,7 +807,11 @@ void ContainerBox::set_margin_y_vertical(double vertical_y, Harmonia::Unit verti
     margin_up.unit_type = vertical_unit;
     margin_down.length = vertical_y;
     margin_down.unit_type = vertical_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 void ContainerBox::set_margin_x_horizontal(double horizontal_x, Harmonia::Unit horizontal_unit, bool dispatch_alert){
@@ -774,7 +819,11 @@ void ContainerBox::set_margin_x_horizontal(double horizontal_x, Harmonia::Unit h
     margin_right.unit_type = horizontal_unit;
     margin_left.length = horizontal_x;
     margin_left.unit_type = horizontal_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 TypedArray<double> ContainerBox::get_margins(Harmonia::Unit unit_type){
@@ -790,7 +839,11 @@ TypedArray<double> ContainerBox::get_margins(Harmonia::Unit unit_type){
 void ContainerBox::set_margin_up(double up, Harmonia::Unit up_unit, bool dispatch_alert){
     margin_up.length = up;
     margin_up.unit_type = up_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 double ContainerBox::get_margin_up(Harmonia::Unit unit_type){
@@ -800,7 +853,11 @@ double ContainerBox::get_margin_up(Harmonia::Unit unit_type){
 void ContainerBox::set_margin_down(double down, Harmonia::Unit down_unit, bool dispatch_alert){
     margin_down.length = down;
     margin_down.unit_type = down_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 double ContainerBox::get_margin_down(Harmonia::Unit unit_type){
@@ -810,7 +867,11 @@ double ContainerBox::get_margin_down(Harmonia::Unit unit_type){
 void ContainerBox::set_margin_left(double left, Harmonia::Unit left_unit, bool dispatch_alert){
     margin_left.length = left;
     margin_left.unit_type = left_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 double ContainerBox::get_margin_left(Harmonia::Unit unit_type){
     return get_width_length_pair_unit(margin_left, unit_type);
@@ -819,7 +880,11 @@ double ContainerBox::get_margin_left(Harmonia::Unit unit_type){
 void ContainerBox::set_margin_right(double right, Harmonia::Unit right_unit, bool dispatch_alert){
     margin_right.length = right;
     margin_right.unit_type = right_unit;
-    if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));    
+    if (alert_manager) {
+        if (dispatch_alert) alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::MARGIN)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 double ContainerBox::get_margin_right(Harmonia::Unit unit_type){
@@ -856,7 +921,11 @@ Harmonia::OverflowBehaviour ContainerBox::get_overflow_behaviour(){
 void ContainerBox::set_pos_x(double new_x, Harmonia::Unit unit_type){
     pos_x.length = new_x;
     pos_x.unit_type = unit_type;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::POSITION)));
+    if (alert_manager) {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::POSITION)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 double ContainerBox::get_pos_x(Harmonia::Unit unit_type){
@@ -876,7 +945,11 @@ String ContainerBox::get_pos_x_str(){
 void ContainerBox::set_pos_y(double new_y, Harmonia::Unit unit_type){
     pos_y.length = new_y;
     pos_y.unit_type = unit_type;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::POSITION)));
+    if (alert_manager) {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::POSITION)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 double ContainerBox::get_pos_y(Harmonia::Unit unit_type){
@@ -914,7 +987,11 @@ double ContainerBox::calculate_total_width(Harmonia::Unit unit_type){
 void ContainerBox::set_width(double length, Harmonia::Unit unit_type){
     ContainerBox::width.length = length;
     ContainerBox::width.unit_type = unit_type;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::WIDTH)));
+    if (alert_manager) {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::WIDTH)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 void ContainerBox::set_width_str(String length_and_unit){
@@ -931,7 +1008,11 @@ String ContainerBox::get_width_str()
 void ContainerBox::set_height(double length, Harmonia::Unit unit_type){
     ContainerBox::height.length = length;
     ContainerBox::height.unit_type = unit_type;
-    alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::HEIGHT)));
+    if (alert_manager) {
+        alert_manager->dispatch_alert(memnew(AlertLayoutChange(ALERT_LAYOUT_CHANGE, AlertLayoutChange::LayoutChanged::HEIGHT)));
+    } else {
+        UtilityFunctions::print("Alert manager is null! Cannot dispatch alert");
+    }
 }
 
 void ContainerBox::set_height_str(String length_and_unit){
