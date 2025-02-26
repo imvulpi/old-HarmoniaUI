@@ -23,7 +23,7 @@ namespace HarmoniaUI.containers
     /// <para>Even with bindings, if <c>ContainerBox</c> does not have an implementation in C# (such as this one),  
     /// it may cause issues with Godot's systems, including exporting, <c>GetNode&lt;ContainerBox&gt;()</c>, and others.</para>
     /// </summary>
-    [GlobalClass, Icon("res://addons/harmoniaui/EmptyContainerBox.svg")]
+    [GlobalClass, Icon("res://addons/harmoniaui/csharp/icons/EmptyContainerBox.svg")]
     public partial class EmptyContainerBox : ContainerBox
     {
     }
