@@ -1,9 +1,9 @@
 ﻿namespace HarmoniaUI.core
 {
     /// <summary>
-    /// Constants, enums and other related to HarmoniaUI project, This class shouldn't be an instance.
+    /// Constants, enums and other related to HarmoniaUI project.
     /// </summary>
-    public class Harmonia
+    public static class Harmonia
     {
         /// <summary>
         /// Enum used for defining overflowing behaviour
