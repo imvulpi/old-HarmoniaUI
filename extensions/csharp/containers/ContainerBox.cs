@@ -12,7 +12,6 @@ namespace HarmoniaUI.containers
     /// Represents a UI container that manages layout, positioning, paddings, margins, and other related properties.
     /// Provides methods for handling visibility, event binding, layout management.
     /// </summary>
-    [GlobalClass]
     public partial class ContainerBox : Control
     {
         public ContainerBox() {
