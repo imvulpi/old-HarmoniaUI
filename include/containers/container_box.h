@@ -33,7 +33,6 @@ public:
     /// @note This will get removed in the future.
     double update_interval {1.0};
 
-    void _enter_tree();
     void on_window_size_changed();
     void _ready();
     void _process(double delta);
