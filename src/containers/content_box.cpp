@@ -113,13 +113,11 @@ bool ContentBox::calculate_y_priority(){
     if(is_overflowed_y == false){
         return false;
     }
-    UtilityFunctions::print("Calculating y priority");
     if(is_overflowed_x){
-        double scroll_check = get_size().y * scroll_x_checking_size; // var
+        double scroll_check = get_size().y * scroll_x_checking_size;
         Vector2 mouse_pos = get_global_mouse_position();
         Vector2 scroll_size = scrollbar_x->get_size();
         Vector2 scroll_position = scrollbar_x->get_global_position();
-        UtilityFunctions::print("Global mouse pos: ", mouse_pos, " scroll size: ", scroll_size, " global scroll pos: ", scroll_position);
 
         // top: pos_y - check | mousepos.y >= top
         // left: pos_x | mousepos.x >= left
@@ -131,7 +129,6 @@ bool ContentBox::calculate_y_priority(){
            mouse_pos.x >= scroll_position.x &&
            mouse_pos.x <= scroll_size.x + scroll_position.x)
         {
-            UtilityFunctions::print("Is not priority");
             return false;
         }
     }
