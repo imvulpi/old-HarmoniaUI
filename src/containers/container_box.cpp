@@ -9,7 +9,11 @@
 #include "core/systems/alert/layout/alert_layout_change.h"
 #include "commons/string_helper.h"
 
-void ContainerBox::_enter_tree(){
+void ContainerBox::on_window_size_changed(){
+    window_size = get_tree()->get_root()->get_visible_rect().size;
+}
+
+void ContainerBox::_ready(){
     if (Engine::get_singleton()->is_editor_hint()) {
         window_size = Size2(
             ProjectSettings::get_singleton()->get_setting("display/window/size/viewport_width"), 
@@ -22,7 +26,9 @@ void ContainerBox::_enter_tree(){
             content_box = found_content_box;
         }
     }else{
-        get_tree()->get_root()->connect("size_changed", Callable(this, "on_window_size_changed"));
+        if(!get_tree()->get_root()->is_connected("size_changed", Callable(this, "on_window_size_changed"))){
+            get_tree()->get_root()->connect("size_changed", Callable(this, "on_window_size_changed"));
+        }
         window_size = get_tree()->get_root()->get_visible_rect().size;
     }
 
@@ -30,13 +36,7 @@ void ContainerBox::_enter_tree(){
         UtilityFunctions::print("Alert manager was null, attempting to fix that.");
         alert_manager = memnew(AlertManager);
     }
-}
 
-void ContainerBox::on_window_size_changed(){
-    window_size = get_tree()->get_root()->get_visible_rect().size;
-}
-
-void ContainerBox::_ready(){
     set_process(true);
     set_string_scroll_y_step("10px");
     set_string_scroll_x_step("10px");
