@@ -952,16 +952,6 @@ String ContainerBox::get_pos_y_str(){
     return pos_y_str;
 }
 
-void ContainerBox::set_debug_outputs(bool debug_outputs)
-{
-    ContainerBox::debug_outputs = debug_outputs;
-}
-
-bool ContainerBox::get_debug_outputs()
-{
-    return ContainerBox::debug_outputs;
-}
-
 double ContainerBox::get_width(Harmonia::Unit unit_type){
     return get_width_length_pair_unit(width, unit_type);
 }
@@ -1052,9 +1042,6 @@ void ContainerBox::_bind_methods(){
     ClassDB::bind_method(D_METHOD("set_height_str", "length_and_unit"), &ContainerBox::set_height_str);
     ClassDB::bind_method(D_METHOD("get_height_str"), &ContainerBox::get_height_str);
 
-    ClassDB::bind_method(D_METHOD("set_debug_outputs", "debug_outputs"), &ContainerBox::set_debug_outputs);
-    ClassDB::bind_method(D_METHOD("get_debug_outputs"), &ContainerBox::get_debug_outputs);
-
     ClassDB::bind_method(D_METHOD("set_alert_manager", "manager"), &ContainerBox::set_alert_manager);
     ClassDB::bind_method(D_METHOD("get_alert_manager"), &ContainerBox::get_alert_manager);
 
@@ -1128,7 +1115,6 @@ void ContainerBox::_bind_methods(){
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "alert_manager", PROPERTY_HINT_RESOURCE_TYPE, "alert_manager", PROPERTY_USAGE_NO_EDITOR), "set_alert_manager", "get_alert_manager");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_TYPE_STRING, "width_str", PROPERTY_USAGE_NO_EDITOR), "set_width_str", "get_width_str");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_TYPE_STRING, "height_str", PROPERTY_USAGE_NO_EDITOR), "set_height_str", "get_height_str");
-    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "debug_outputs", PROPERTY_HINT_TYPE_STRING, "debug_outputs", PROPERTY_USAGE_NO_EDITOR), "set_debug_outputs", "get_debug_outputs");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour", "get_overflow_behaviour");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_y_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_y_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_y_step", "get_string_scroll_y_step");
     ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_x_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_x_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_x_step", "get_string_scroll_x_step");
@@ -1160,9 +1146,6 @@ bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)
     }else if(name == "background_color"){
         set_background_color(p_value);
         return true;
-    }else if(name == "debug_outputs"){
-        set_debug_outputs(p_value);
-    	return true;
     }else if(name == "pos_x_str"){
         set_pos_x_str(p_value);
         return true;
@@ -1197,9 +1180,6 @@ bool ContainerBox::_get(const StringName &p_name, Variant &r_ret) const
     }else if(name == "background_color"){
         r_ret = background_color;
         return true;
-    }else if(name == "debug_outputs"){
-        r_ret = debug_outputs;
-    	return true;
     }else if(name == "pos_x_str"){
         r_ret = pos_x_str;
         return true;
@@ -1225,7 +1205,6 @@ void ContainerBox::_get_property_list(List<PropertyInfo> *p_list) const
     p_list->push_back(PropertyInfo(Variant::STRING, "margin_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "padding_str"));
     p_list->push_back(PropertyInfo(Variant::COLOR, "background_color"));
-    p_list->push_back(PropertyInfo(Variant::BOOL, "debug_outputs"));
     p_list->push_back(PropertyInfo(Variant::STRING, "pos_x_str"));
     p_list->push_back(PropertyInfo(Variant::STRING, "pos_y_str"));
 }

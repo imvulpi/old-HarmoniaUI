@@ -387,17 +387,6 @@ public:
     /// @note return ex: '100px', '100%', '100vw', '100vh'
     String get_pos_y_str();
     
-    /// @brief Should debug outputs be printed to the console?
-    bool debug_outputs = false;
-    
-    /// @brief Sets debug outputs
-    /// @param debug_outputs Should debug outputs be printed?
-    void set_debug_outputs(bool debug_outputs);
-
-    /// @brief Gets the debug outputs setting
-    /// @return debug outputs option
-    bool get_debug_outputs();
-
     LengthPair width; /* Width pair, stores length and unit */
 
     /// @brief Gets the width in provided unit
