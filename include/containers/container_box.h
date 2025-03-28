@@ -180,6 +180,11 @@ public:
     /// @brief Self positioning, gets called when there is no parent
     void update_self_position();
 
+    /// @brief Calculates content position based on other fields or methods
+    /// @param unit_type Unit type the position should be in
+    /// @return Correct position of content
+    Vector2 calculate_content_position(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
     /// @brief Updates the container children positions in runtime
     void update_children_position(TypedArray<Node> children);
 
@@ -398,6 +403,10 @@ public:
     /// @param unit_type The unit type total width should be returned with.
     double calculate_total_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
+    /// @brief Calculates the content box width
+    /// @param unit_type The unit type content width should be returned with.
+    double calculate_content_width(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
     /// @brief Sets the width to provided length and unit
     /// @param length Width length
     /// @param unit_type Width length unit type 
@@ -422,6 +431,10 @@ public:
     /// @brief Calculates the height with addition of other specific attributes, whether thats container specific or for example padding.
     /// @param unit_type The unit type total height should be returned with.
     double calculate_total_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
+
+    /// @brief Calculates the content box height
+    /// @param unit_type The unit type content height should be returned with.
+    double calculate_content_height(Harmonia::Unit unit_type = Harmonia::Unit::PIXEL);
 
     /// @brief Sets the height to provided length and unit
     /// @param length Height length
