@@ -442,7 +442,7 @@ Vector2 ContainerBox::calculate_content_position(Harmonia::Unit unit_type){
     return content_position;
 }
 
-void ContainerBox:: update_children_position(TypedArray<Node> children){
+void ContainerBox::update_children_position(TypedArray<Node> children){
     Vector2 position = Vector2(0, get_padding_up()); // scrolling here if used...
 
     if(content_box && overflow_behaviour == Harmonia::OverflowBehaviour::SCROLL){
@@ -1107,20 +1107,10 @@ void ContainerBox::_bind_methods(){
 
     ADD_PROPERTY(PropertyInfo(Variant::INT, "visibility", PROPERTY_HINT_ENUM, visibility_types, PROPERTY_USAGE_DEFAULT), "set_visibility", "get_visibility");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "alert_manager", PROPERTY_HINT_RESOURCE_TYPE, "alert_manager", PROPERTY_USAGE_NO_EDITOR), "set_alert_manager", "get_alert_manager");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_TYPE_STRING, "width_str", PROPERTY_USAGE_NO_EDITOR), "set_width_str", "get_width_str");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_TYPE_STRING, "height_str", PROPERTY_USAGE_NO_EDITOR), "set_height_str", "get_height_str");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "overflow_behaviour", PROPERTY_HINT_ENUM, overflow_behaviours, PROPERTY_USAGE_DEFAULT), "set_overflow_behaviour", "get_overflow_behaviour");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_y_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_y_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_y_step", "get_string_scroll_y_step");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "string_scroll_x_step", PROPERTY_HINT_TYPE_STRING, "string_scroll_x_step", PROPERTY_USAGE_NO_EDITOR), "set_string_scroll_x_step", "get_string_scroll_x_step");
     ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "vertical_scroll", PROPERTY_HINT_NODE_TYPE, "vertical_scroll", PROPERTY_USAGE_DEFAULT), "set_vertical_scroll", "get_vertical_scroll");
     ADD_PROPERTY(PropertyInfo(Variant::NODE_PATH, "horizontal_scroll", PROPERTY_HINT_NODE_TYPE, "horizontal_scroll", PROPERTY_USAGE_DEFAULT), "set_horizontal_scroll", "get_horizontal_scroll");    
-    ADD_PROPERTY(PropertyInfo(Variant::INT, "positioning", PROPERTY_HINT_ENUM, positioning_types, PROPERTY_USAGE_DEFAULT), "set_position_type", "get_position_type");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_x_str", PROPERTY_HINT_TYPE_STRING, "pos_x_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_x_str", "get_pos_x_str");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "pos_y_str", PROPERTY_HINT_TYPE_STRING, "pos_y_str", PROPERTY_USAGE_NO_EDITOR), "set_pos_y_str", "get_pos_y_str");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "margin_str", PROPERTY_HINT_TYPE_STRING, "margin_str", PROPERTY_USAGE_NO_EDITOR), "set_margin_str", "get_margin_str");
-    ADD_PROPERTY(PropertyInfo(Variant::STRING, "padding_str", PROPERTY_HINT_TYPE_STRING, "padding_str", PROPERTY_USAGE_NO_EDITOR), "set_padding_str", "get_padding_str");
-    ADD_PROPERTY(PropertyInfo(Variant::COLOR, "background_color", PROPERTY_HINT_NONE, "background_color", PROPERTY_USAGE_NO_EDITOR), "set_background_color", "get_background_color");
-}
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "positioning", PROPERTY_HINT_ENUM, positioning_types, PROPERTY_USAGE_DEFAULT), "set_position_type", "get_position_type");}
 
 bool ContainerBox::_set(const StringName &p_name, const Variant &p_value)
 {
@@ -1192,13 +1182,13 @@ bool ContainerBox::_get(const StringName &p_name, Variant &r_ret) const
 
 void ContainerBox::_get_property_list(List<PropertyInfo> *p_list) const
 {
-    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_x_step"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_y_step"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "width_str"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "height_str"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "margin_str"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "padding_str"));
-    p_list->push_back(PropertyInfo(Variant::COLOR, "background_color"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "pos_x_str"));
-    p_list->push_back(PropertyInfo(Variant::STRING, "pos_y_str"));
+    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_x_step", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "string_scroll_y_step", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "width_str", PROPERTY_HINT_NONE, "The WIDTH of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "height_str", PROPERTY_HINT_NONE, "The HEIGHT of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "margin_str", PROPERTY_HINT_NONE, "The MARGIN of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "padding_str", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::COLOR, "background_color", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "pos_x_str", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
+    p_list->push_back(PropertyInfo(Variant::STRING, "pos_y_str", PROPERTY_HINT_NONE, "The PADDING of this container", PROPERTY_USAGE_DEFAULT));
 }
